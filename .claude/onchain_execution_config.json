@@ -1,0 +1,673 @@
+{
+  "_metadata": {
+    "version": "1.0.0",
+    "last_updated": "2025-11-23",
+    "classification": "ON_CHAIN_EXECUTION",
+    "purpose": "Direct blockchain trading without third-party APIs or CEX risk"
+  },
+
+  "core_principle": {
+    "description": "Trade directly on blockchain via smart contracts - complete sovereignty",
+    "benefits": [
+      "No counterparty risk (no exchange can steal your funds)",
+      "No KYC/AML requirements",
+      "No API rate limits",
+      "No account freezes or shutdowns",
+      "True decentralization",
+      "MEV opportunities (if you're the bot, not the victim)"
+    ],
+    "challenges": [
+      "Gas fees (can eat profits on small trades)",
+      "MEV attacks (front-running, sandwich attacks)",
+      "Slower execution vs CEX",
+      "More technical complexity",
+      "Slippage on low-liquidity pairs"
+    ]
+  },
+
+  "blockchain_selection": {
+    "description": "Choose blockchain based on gas costs vs liquidity tradeoff",
+    "chains": {
+      "ethereum_mainnet": {
+        "pros": [
+          "Highest liquidity (Uniswap $4B+ TVL)",
+          "Most mature DeFi ecosystem",
+          "Most secure (highest hash rate)",
+          "Best for large trades (low slippage)"
+        ],
+        "cons": [
+          "EXPENSIVE gas (15-50 gwei = $5-50 per swap)",
+          "300,000 trades = $1.5M - $15M in gas fees (IMPOSSIBLE with $10 budget)"
+        ],
+        "verdict": "SKIP for high-frequency trading",
+        "use_cases": "Only for large trades (>$10k) where gas is <0.5% of trade size"
+      },
+
+      "arbitrum": {
+        "pros": [
+          "90% cheaper than Ethereum L1",
+          "High liquidity (Uniswap, GMX, Camelot)",
+          "Fast finality (2-3 seconds)",
+          "Ethereum security (optimistic rollup)"
+        ],
+        "cons": [
+          "Still $0.10-0.50 per swap",
+          "300,000 trades = $30k-150k in gas (too expensive)"
+        ],
+        "verdict": "Good for medium-frequency (100-1000 trades/day)",
+        "gas_estimate": "$0.10-0.50 per swap",
+        "dex_options": ["Uniswap V3", "Camelot", "GMX", "Sushiswap"]
+      },
+
+      "optimism": {
+        "pros": [
+          "Similar to Arbitrum (90% cheaper than L1)",
+          "Growing DeFi ecosystem (Velodrome, Uniswap)",
+          "OP token incentives for liquidity"
+        ],
+        "cons": [
+          "Slightly higher gas than Arbitrum",
+          "Less liquidity than Arbitrum"
+        ],
+        "verdict": "Alternative to Arbitrum",
+        "gas_estimate": "$0.15-0.60 per swap"
+      },
+
+      "base": {
+        "pros": [
+          "Coinbase-backed L2 (growing fast)",
+          "Very cheap gas ($0.01-0.10 per swap)",
+          "Uniswap, Aerodrome DEXes",
+          "Fast adoption (retail users)"
+        ],
+        "cons": [
+          "Lower liquidity than Arbitrum/Optimism",
+          "Newer (less battle-tested)"
+        ],
+        "verdict": "STRONG CANDIDATE for high-frequency",
+        "gas_estimate": "$0.01-0.10 per swap",
+        "budget_analysis": "300k trades * $0.05 avg = $15k gas (still too high)"
+      },
+
+      "polygon": {
+        "pros": [
+          "VERY cheap gas ($0.001-0.01 per swap)",
+          "High liquidity (Uniswap, Quickswap, Balancer)",
+          "Mature ecosystem",
+          "Fast blocks (2 seconds)"
+        ],
+        "cons": [
+          "Less secure than rollups (sidechain, not L2)",
+          "Validator centralization concerns"
+        ],
+        "verdict": "BEST for high-frequency on EVM",
+        "gas_estimate": "$0.001-0.01 per swap",
+        "budget_analysis": "300k trades * $0.005 avg = $1,500 gas (DOABLE with profit from trades)"
+      },
+
+      "bsc": {
+        "pros": [
+          "EXTREMELY cheap gas ($0.10-0.30 per swap)",
+          "High liquidity (PancakeSwap $2B+ TVL)",
+          "Fast blocks (3 seconds)",
+          "Large user base"
+        ],
+        "cons": [
+          "Centralized (21 validators controlled by Binance)",
+          "Security concerns (multiple hacks)",
+          "Not truly decentralized"
+        ],
+        "verdict": "Cheap but risky (defeats purpose of on-chain sovereignty)",
+        "gas_estimate": "$0.10-0.30 per swap"
+      },
+
+      "solana": {
+        "pros": [
+          "INSANELY cheap ($0.00001-0.0001 per transaction)",
+          "300k trades = $3-30 in fees (PERFECT for $10 budget)",
+          "Ultra-fast (400ms blocks)",
+          "High liquidity (Jupiter aggregator, Orca, Raydium)",
+          "Growing DeFi ecosystem"
+        ],
+        "cons": [
+          "Different architecture (not EVM, need Rust/Anchor)",
+          "Network outages historically (improving)",
+          "Different tooling (web3.py won't work, need solana-py)"
+        ],
+        "verdict": "BEST for ultra-high-frequency (300k+ trades)",
+        "gas_estimate": "$0.00001-0.0001 per swap",
+        "budget_analysis": "300k trades * $0.00005 avg = $15 total gas (PERFECT)"
+      },
+
+      "avalanche": {
+        "pros": [
+          "Fast finality (<2 seconds)",
+          "Low gas ($0.50-2 per swap on C-Chain)",
+          "Trader Joe, Pangolin DEXes"
+        ],
+        "cons": [
+          "Higher gas than Polygon/Solana",
+          "Lower liquidity than Ethereum L2s"
+        ],
+        "verdict": "Skip - gas too high for 300k trades"
+      }
+    },
+
+    "recommendation": {
+      "for_300k_trades_with_10_budget": "Solana (only viable option)",
+      "for_medium_frequency_1000_trades": "Polygon or Base",
+      "for_low_frequency_100_trades": "Arbitrum or Optimism",
+      "for_large_trades_low_frequency": "Ethereum mainnet (best liquidity)"
+    }
+  },
+
+  "dex_protocols": {
+    "description": "Decentralized exchanges you can interact with directly via smart contracts",
+    "evm_dexes": {
+      "uniswap_v3": {
+        "chains": ["Ethereum", "Arbitrum", "Optimism", "Polygon", "Base"],
+        "liquidity": "Highest (market leader)",
+        "contract_interaction": "Direct smart contract calls via web3.py",
+        "features": [
+          "Concentrated liquidity (better capital efficiency)",
+          "Multiple fee tiers (0.01%, 0.05%, 0.3%, 1%)",
+          "TWAP oracles (time-weighted average price)",
+          "Flash swaps (borrow tokens, use them, pay back in same tx)"
+        ],
+        "smart_contract_addresses": {
+          "ethereum": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
+          "arbitrum": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
+          "polygon": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
+          "base": "0x2626664c2603336E57B271c5C0b26F421741e481"
+        },
+        "python_library": "web3.py + uniswap-python",
+        "research_queries": [
+          "uniswap v3 direct smart contract interaction python",
+          "uniswap v3 flash swap arbitrage",
+          "uniswap v3 TWAP oracle manipulation",
+          "web3.py uniswap v3 swap example"
+        ]
+      },
+
+      "uniswap_v4": {
+        "status": "Launching 2024 Q4",
+        "features": [
+          "Hooks (customize pool behavior)",
+          "Singleton contract (gas savings)",
+          "Native ETH support",
+          "Even cheaper gas than V3"
+        ],
+        "verdict": "Monitor for launch - could be game-changer"
+      },
+
+      "sushiswap": {
+        "chains": ["Ethereum", "Arbitrum", "Polygon", "Base", "20+ others"],
+        "liquidity": "High (2nd to Uniswap)",
+        "advantages": [
+          "Same interface as Uniswap V2 (easy to integrate)",
+          "Available on more chains",
+          "Lower fees on some pairs"
+        ],
+        "smart_contract": "UniswapV2Router02 clone",
+        "research_queries": [
+          "sushiswap direct swap python web3",
+          "sushiswap arbitrage bot"
+        ]
+      },
+
+      "curve": {
+        "specialty": "Stablecoin swaps (USDC/USDT/DAI)",
+        "chains": ["Ethereum", "Arbitrum", "Polygon", "Optimism"],
+        "advantages": [
+          "Lowest slippage for stablecoins",
+          "Optimized for low-volatility pairs",
+          "Liquidity pools earning fees"
+        ],
+        "use_cases": [
+          "Stablecoin arbitrage (USDC on DEX A vs USDT on DEX B)",
+          "Low-risk yield farming"
+        ],
+        "research_queries": [
+          "curve finance stablecoin arbitrage",
+          "curve tri-pool arbitrage bot"
+        ]
+      },
+
+      "balancer": {
+        "specialty": "Multi-asset pools (up to 8 tokens)",
+        "chains": ["Ethereum", "Arbitrum", "Polygon"],
+        "advantages": [
+          "Customizable pool weights (80/20 instead of 50/50)",
+          "Flash loans built-in",
+          "Composable pools"
+        ],
+        "use_cases": [
+          "Portfolio rebalancing",
+          "Flash loan arbitrage"
+        ]
+      },
+
+      "pancakeswap": {
+        "chain": "BSC (Binance Smart Chain)",
+        "liquidity": "Highest on BSC ($2B+ TVL)",
+        "advantages": [
+          "Very cheap gas",
+          "High volume",
+          "UniswapV2 fork (easy integration)"
+        ],
+        "cons": "BSC centralization risk",
+        "verdict": "Use only if Solana/Polygon not viable"
+      }
+    },
+
+    "solana_dexes": {
+      "jupiter_aggregator": {
+        "description": "Meta-DEX aggregator (routes through all Solana DEXes)",
+        "features": [
+          "Best price discovery (checks 20+ DEXes)",
+          "Smart routing (splits orders across multiple DEXes)",
+          "Direct API (no need to interact with each DEX separately)",
+          "Limit orders, DCA, perpetuals"
+        ],
+        "python_library": "solana-py + jupiter-python-sdk",
+        "verdict": "BEST option for Solana trading",
+        "research_queries": [
+          "jupiter aggregator python bot",
+          "solana jupiter swap direct transaction",
+          "jupiter dex arbitrage"
+        ]
+      },
+
+      "orca": {
+        "description": "Leading Solana AMM",
+        "features": [
+          "Concentrated liquidity (like Uniswap V3)",
+          "Whirlpools (low slippage)",
+          "Fair launch tokens"
+        ],
+        "verdict": "Good backup if Jupiter unavailable"
+      },
+
+      "raydium": {
+        "description": "Hybrid AMM + order book",
+        "features": [
+          "AMM pools",
+          "Serum order book integration",
+          "Acceleraytor launchpad"
+        ],
+        "verdict": "Use for specific pairs not on Jupiter"
+      },
+
+      "phoenix": {
+        "description": "On-chain limit order book",
+        "features": [
+          "True order book (not AMM)",
+          "Market maker rebates",
+          "Professional trading features"
+        ],
+        "verdict": "IDEAL for maker strategies (get rebates like Hyperliquid)"
+      }
+    }
+  },
+
+  "direct_blockchain_interaction": {
+    "description": "How to execute trades directly without third-party APIs",
+    "methods": {
+      "rpc_nodes": {
+        "description": "Connect directly to blockchain nodes (no middleman)",
+        "options": {
+          "self_hosted_node": {
+            "pros": [
+              "Complete sovereignty",
+              "No rate limits",
+              "No API downtime",
+              "Lowest latency (if co-located)"
+            ],
+            "cons": [
+              "Expensive (AWS/GCP hosting + disk space)",
+              "Ethereum full node = 1TB+ disk",
+              "Sync time (days to weeks)",
+              "Maintenance burden"
+            ],
+            "cost": "$50-500/month (too expensive for $10 budget)",
+            "verdict": "Only for serious operations (>$100k capital)"
+          },
+
+          "free_public_rpc": {
+            "pros": [
+              "FREE",
+              "No setup",
+              "Multiple providers"
+            ],
+            "cons": [
+              "Rate limits (10-100 requests/sec)",
+              "Unreliable (downtime common)",
+              "Slower (shared infrastructure)",
+              "Some censor transactions (MEV protection)"
+            ],
+            "providers": {
+              "ethereum": [
+                "https://eth.public-rpc.com",
+                "https://rpc.ankr.com/eth",
+                "https://ethereum.publicnode.com"
+              ],
+              "arbitrum": [
+                "https://arb1.arbitrum.io/rpc",
+                "https://rpc.ankr.com/arbitrum"
+              ],
+              "polygon": [
+                "https://polygon-rpc.com",
+                "https://rpc.ankr.com/polygon"
+              ],
+              "base": [
+                "https://mainnet.base.org",
+                "https://base.publicnode.com"
+              ],
+              "solana": [
+                "https://api.mainnet-beta.solana.com",
+                "https://solana-api.projectserum.com"
+              ]
+            },
+            "verdict": "BEST for $10 budget (start here)"
+          },
+
+          "paid_rpc_services": {
+            "providers": {
+              "alchemy": {
+                "free_tier": "300M compute units/month (enough for 10k-100k requests)",
+                "paid_tier": "$49/month (100M requests)",
+                "verdict": "Free tier sufficient for testing"
+              },
+              "infura": {
+                "free_tier": "100k requests/day",
+                "paid_tier": "$50/month",
+                "verdict": "Similar to Alchemy"
+              },
+              "quicknode": {
+                "free_tier": "Limited",
+                "paid_tier": "$9-299/month",
+                "features": "Faster, more reliable, MEV protection",
+                "verdict": "Consider if scaling up"
+              }
+            }
+          }
+        }
+      },
+
+      "smart_contract_interaction": {
+        "description": "Call DEX smart contracts directly from Python",
+        "libraries": {
+          "web3_py": {
+            "chains": "All EVM chains (Ethereum, Arbitrum, Polygon, Base, etc.)",
+            "installation": "pip install web3",
+            "example_workflow": [
+              "1. Connect to RPC node: web3 = Web3(Web3.HTTPProvider('https://polygon-rpc.com'))",
+              "2. Load wallet: account = web3.eth.account.from_key('YOUR_PRIVATE_KEY')",
+              "3. Load DEX contract: uniswap = web3.eth.contract(address=DEX_ADDRESS, abi=DEX_ABI)",
+              "4. Build swap transaction: tx = uniswap.functions.swapExactTokensForTokens(...).buildTransaction()",
+              "5. Sign transaction: signed = web3.eth.account.sign_transaction(tx, private_key)",
+              "6. Send transaction: tx_hash = web3.eth.send_raw_transaction(signed.rawTransaction)",
+              "7. Wait for confirmation: receipt = web3.eth.wait_for_transaction_receipt(tx_hash)"
+            ],
+            "research_queries": [
+              "web3.py uniswap swap tutorial",
+              "web3.py direct dex interaction",
+              "python ethereum smart contract call"
+            ]
+          },
+
+          "solana_py": {
+            "chain": "Solana",
+            "installation": "pip install solana anchorpy",
+            "workflow": [
+              "1. Connect to RPC: client = Client('https://api.mainnet-beta.solana.com')",
+              "2. Load wallet: keypair = Keypair.from_secret_key(bytes(SECRET_KEY))",
+              "3. Build swap instruction (via Jupiter API or direct program call)",
+              "4. Create transaction: tx = Transaction().add(swap_instruction)",
+              "5. Sign and send: signature = client.send_transaction(tx, keypair)"
+            ],
+            "research_queries": [
+              "solana-py jupiter swap example",
+              "solana python trading bot",
+              "anchorpy dex interaction"
+            ]
+          }
+        }
+      }
+    }
+  },
+
+  "gas_optimization_strategies": {
+    "description": "How to execute 300k trades without spending $1M in gas",
+    "strategies": {
+      "batch_transactions": {
+        "description": "Combine multiple swaps into one transaction",
+        "how": "Use Multicall contract or custom router",
+        "gas_savings": "10-50% (share base tx cost across multiple swaps)",
+        "example": "Instead of 10 separate swaps (10 * $0.50 = $5), batch into 1 tx ($1)",
+        "implementation": [
+          "Multicall3 contract (0xcA11bde05977b3631167028862bE2a173976CA11)",
+          "Custom smart contract with loop",
+          "Flash loan + batch swaps + repay in one tx"
+        ]
+      },
+
+      "use_cheapest_chain": {
+        "recommendation": "Solana for 300k trades ($15 total gas vs $150k on Ethereum)",
+        "fallback": "Polygon ($1,500 total gas)"
+      },
+
+      "maker_orders_only": {
+        "description": "On order book DEXes (Phoenix on Solana), place limit orders",
+        "benefit": "Get PAID maker rebates instead of paying taker fees",
+        "drawback": "Orders may not fill immediately (need to wait)",
+        "verdict": "Use for non-urgent trades"
+      },
+
+      "gas_price_optimization": {
+        "evm_chains": [
+          "Monitor gas prices (use GasNow, EthGasStation APIs)",
+          "Trade during off-peak hours (weekends, late night UTC)",
+          "Set custom gas price (lower = slower but cheaper)"
+        ],
+        "solana": [
+          "Use priority fees only when network congested",
+          "Set compute unit limit (avoid overpaying)",
+          "Monitor recent priority fees (solana.fm/analytics)"
+        ]
+      },
+
+      "flash_loans": {
+        "description": "Borrow millions, execute arbitrage, repay in same tx - NO CAPITAL NEEDED",
+        "use_case": "Arbitrage between DEXes without using your $10",
+        "how": [
+          "1. Flash loan $1M USDC from Aave/dYdX",
+          "2. Swap on DEX A (BTC cheap)",
+          "3. Swap on DEX B (BTC expensive)",
+          "4. Repay loan + 0.09% fee",
+          "5. Keep profit"
+        ],
+        "protocols": {
+          "aave_v3": {
+            "chains": ["Ethereum", "Arbitrum", "Polygon", "Optimism"],
+            "fee": "0.09%",
+            "max_amount": "Depends on pool liquidity (millions)"
+          },
+          "balancer": {
+            "chains": ["Ethereum", "Arbitrum", "Polygon"],
+            "fee": "0%",
+            "max_amount": "Pool liquidity"
+          },
+          "uniswap_v3": {
+            "feature": "Flash swaps (borrow token, use it, pay back)",
+            "fee": "Pool fee (0.05%-1%)"
+          }
+        },
+        "verdict": "CRITICAL for $10 budget - use borrowed capital, not your own",
+        "research_queries": [
+          "aave flash loan arbitrage tutorial",
+          "uniswap v3 flash swap python",
+          "balancer flash loan zero fee"
+        ]
+      }
+    }
+  },
+
+  "mev_protection": {
+    "description": "Protect against front-running, sandwich attacks, MEV bots",
+    "threats": {
+      "front_running": {
+        "description": "Bot sees your pending tx, submits same tx with higher gas",
+        "impact": "They get the trade, you get reverted tx (wasted gas)",
+        "defense": [
+          "Use private mempools (Flashbots Protect, Eden Network)",
+          "Use MEV-resistant DEXes (CowSwap, 1inch Fusion)",
+          "Slippage protection (limit max price movement)"
+        ]
+      },
+
+      "sandwich_attack": {
+        "description": "Bot front-runs your buy (pumps price) + back-runs (dumps), stealing profit",
+        "impact": "You buy high, bot profits from your slippage",
+        "defense": [
+          "Private mempools (tx not visible to bots)",
+          "Low slippage tolerance (0.1%-0.5%)",
+          "Split large orders into smaller chunks",
+          "Use limit orders instead of market orders"
+        ]
+      }
+    },
+
+    "protection_tools": {
+      "flashbots_protect": {
+        "description": "Send tx directly to miners (skip public mempool)",
+        "chains": ["Ethereum"],
+        "how": "Use Flashbots RPC endpoint",
+        "cost": "FREE",
+        "verdict": "MUST USE for Ethereum trades"
+      },
+
+      "eden_network": {
+        "description": "Similar to Flashbots (private mempool)",
+        "chains": ["Ethereum"],
+        "cost": "0.5% of profit (or free if no profit)"
+      },
+
+      "cowswap": {
+        "description": "MEV-resistant DEX aggregator",
+        "how": "Batch orders together, settle off-chain, execute on-chain",
+        "chains": ["Ethereum", "Gnosis Chain"],
+        "verdict": "Good for retail traders (not high-frequency)"
+      }
+    }
+  },
+
+  "recommended_architecture": {
+    "description": "Complete on-chain trading setup for $10 budget + 300k trades",
+    "stack": {
+      "blockchain": "Solana (only viable option for 300k trades)",
+      "dex": "Jupiter Aggregator (best prices + smart routing)",
+      "rpc": "Free public RPC (https://api.mainnet-beta.solana.com) OR Alchemy free tier",
+      "python_library": "solana-py + jupiter-python-sdk",
+      "wallet": "Phantom or self-custodial (Keypair.from_secret_key)",
+      "strategy": "Arbitrage between Jupiter-routed DEXes + flash loans (Solend)",
+      "gas_budget": "$15-30 total (leaves room for slippage)"
+    },
+
+    "execution_flow": {
+      "step_1": "Research alpha strategies (use research_config.json)",
+      "step_2": "Backtest on Bitcoin data (Hostinger)",
+      "step_3": "Identify arbitrage opportunities (cross-DEX spreads)",
+      "step_4": "Execute on Solana via Jupiter (300k trades * $0.0001 = $30 gas)",
+      "step_5": "Monitor profitability (must earn > gas + slippage)",
+      "step_6": "Scale up capital as profits compound"
+    }
+  },
+
+  "research_queries": {
+    "onchain_trading_fundamentals": [
+      "solana jupiter arbitrage bot tutorial",
+      "web3.py uniswap v3 trading bot",
+      "polygon dex arbitrage python",
+      "flash loan arbitrage smart contract",
+      "mev protection flashbots tutorial"
+    ],
+
+    "gas_optimization": [
+      "solana priority fees optimization",
+      "ethereum gas price prediction",
+      "multicall batch transactions solidity",
+      "how to reduce gas costs defi"
+    ],
+
+    "advanced_strategies": [
+      "cross-dex arbitrage profitability 2024",
+      "solana dex liquidity analysis",
+      "uniswap v3 jit liquidity sniping",
+      "sandwich attack detection prevention",
+      "statistical arbitrage on-chain"
+    ],
+
+    "institutional_evidence": [
+      "jump trading solana market making",
+      "jane street uniswap v3 liquidity",
+      "citadel securities blockchain trading",
+      "\"flash loan arbitrage\" \"renaissance technologies\""
+    ]
+  },
+
+  "budget_breakdown": {
+    "description": "How to allocate $10 budget for 300k trades",
+    "scenario_1_solana": {
+      "gas_cost_per_trade": "$0.0001",
+      "total_gas_300k_trades": "$30",
+      "problem": "Need $30, only have $10",
+      "solution": [
+        "Start with 30k trades ($3 gas)",
+        "Earn profit from arbitrage",
+        "Reinvest profits into more trades",
+        "Compound to 300k trades over time"
+      ]
+    },
+
+    "scenario_2_flash_loans": {
+      "capital_required": "$0 (borrow everything)",
+      "gas_cost_per_trade": "$0.0001 (Solana)",
+      "flash_loan_fee": "0.09% of borrowed amount",
+      "example": [
+        "Borrow $100k USDC via Solend (Solana flash loan)",
+        "Arbitrage between Jupiter DEXes",
+        "Profit 0.5% ($500)",
+        "Repay loan + fee ($90)",
+        "Net profit: $410",
+        "Gas cost: $0.0001",
+        "Repeat 300k times = $123M profit (if opportunity exists)"
+      ],
+      "verdict": "THIS IS THE WAY - use OPM (other people's money)"
+    }
+  },
+
+  "next_steps": {
+    "immediate": [
+      "1. Set up Solana wallet (Phantom or Keypair)",
+      "2. Install solana-py: pip install solana anchorpy",
+      "3. Connect to free RPC node",
+      "4. Test Jupiter swap (trade $1 to verify setup)",
+      "5. Monitor DEX prices for arbitrage opportunities"
+    ],
+
+    "research_phase": [
+      "Use research_config.json to find arbitrage strategies",
+      "Backtest on historical DEX price data",
+      "Calculate expected profit per trade",
+      "Verify gas costs < profit"
+    ],
+
+    "execution_phase": [
+      "Deploy bot on Hostinger",
+      "Start with small trades (100 trades/day)",
+      "Monitor profitability",
+      "Scale up to 300k trades as capital compounds"
+    ]
+  }
+}

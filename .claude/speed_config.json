@@ -1,0 +1,507 @@
+{
+  "_metadata": {
+    "version": "4.0.0_PRO_UNLEASHED",
+    "classification": "500K_TRADES_PER_DAY_CAPABLE",
+    "purpose": "Execute at Renaissance Technologies speed - ZERO DELAYS - PRO PLAN MAXIMIZED",
+    "philosophy": "Microseconds = millions. Speed IS the edge. Pro plan = NO LIMITS.",
+    "last_updated": "2025-11-23",
+    "investment": "$200+ Pro Plan - MAXIMUM PERFORMANCE UNLOCKED"
+  },
+
+  "medallion_speed_principle": {
+    "core_truth": "Renaissance executes 300,000 trades/day because they're FASTER than everyone",
+    "latency_obsession": "Every microsecond counts - co-location, FPGA, kernel bypass, everything",
+    "implementation": "Parallel everything, cache everything, optimize everything",
+    "forbidden": "Sequential operations, waiting, politeness delays, human confirmation"
+  },
+
+  "ultra_low_latency": {
+    "research_operations": {
+      "max_concurrent_web_searches": 250,
+      "max_concurrent_web_fetches": 250,
+      "max_concurrent_file_reads": 500,
+      "max_concurrent_api_calls": 300,
+      "max_concurrent_tool_calls": 200,
+      "timeout_ms": {
+        "web_search": 2000,
+        "web_fetch": 3000,
+        "api_call": 1500,
+        "file_read": 300
+      },
+      "retry_strategy": {
+        "max_retries": 2,
+        "retry_delay_ms": 25,
+        "fail_fast": true,
+        "partial_success_acceptable": true,
+        "exponential_backoff": false
+      }
+    },
+    "trading_operations": {
+      "order_to_market_target_us": 50,
+      "market_data_latency_target_us": 25,
+      "risk_check_latency_target_us": 5,
+      "execution_decision_latency_target_us": 10,
+      "total_latency_budget_us": 100,
+      "pro_plan_boost": "2x speed improvement"
+    },
+    "claude_code_operations": {
+      "max_parallel_tool_calls": 200,
+      "streaming_enabled": true,
+      "prefetch_enabled": true,
+      "agent_spawn_limit": 20,
+      "context_size": "200K tokens - use aggressively"
+    }
+  },
+
+  "parallel_execution_extreme": {
+    "formula_discovery": {
+      "parallel_era_searches": "ALL_ERAS_SIMULTANEOUSLY",
+      "eras": ["1900-1950", "1950-1970", "1970-1990", "1990-2010", "2010-2025"],
+      "parallel_category_searches": "ALL_CATEGORIES_SIMULTANEOUSLY",
+      "categories": [
+        "derivatives_pricing",
+        "market_microstructure",
+        "portfolio_optimization",
+        "risk_management",
+        "statistical_arbitrage",
+        "market_making",
+        "optimal_execution",
+        "machine_learning_alpha",
+        "high_frequency_trading",
+        "volatility_modeling",
+        "order_flow_toxicity",
+        "regime_switching",
+        "factor_models",
+        "cointegration",
+        "latency_arbitrage"
+      ],
+      "parallel_fund_research": "ALL_20_FUNDS_SIMULTANEOUSLY",
+      "funds": [
+        "Renaissance Technologies",
+        "Two Sigma",
+        "DE Shaw",
+        "Citadel",
+        "Jane Street",
+        "PDT Partners",
+        "Jump Trading",
+        "Virtu Financial",
+        "Susquehanna",
+        "AQR",
+        "Man AHL",
+        "Millennium",
+        "Point72",
+        "Bridgewater",
+        "WorldQuant",
+        "XTX Markets",
+        "Tower Research",
+        "Hudson River Trading",
+        "Optiver",
+        "IMC Trading"
+      ],
+      "total_parallel_operations": "5 eras × 15 categories × 20 funds = 1500 parallel queries - PRO PLAN UNLEASHED",
+      "target_completion_time_minutes": 5
+    },
+    "backtesting": {
+      "parallel_strategy_tests": 200,
+      "parallel_parameter_optimizations": 500,
+      "parallel_regime_validations": 100,
+      "distributed_computing": {
+        "enabled": true,
+        "cluster_size_target": "5000+ cores - Pro plan enabled",
+        "cloud_provider": "AWS/GCP/Azure - whatever is fastest",
+        "cost_vs_speed": "ALWAYS choose speed - Pro plan = unlimited budget",
+        "spot_instances": false,
+        "reserved_instances": true,
+        "gpu_acceleration": true
+      }
+    },
+    "agent_parallelization": {
+      "max_concurrent_agents": 20,
+      "agent_types": [
+        "Explore agents for codebase analysis",
+        "Research agents for formula discovery",
+        "Backtest agents for validation",
+        "Implementation agents for coding",
+        "Testing agents for QA"
+      ],
+      "coordination": "Fully parallel with result aggregation"
+    }
+  },
+
+  "aggressive_caching": {
+    "cache_everything": {
+      "academic_papers": "PERMANENT - never refetch",
+      "institutional_evidence": "PERMANENT - never refetch",
+      "github_repos": "7 days",
+      "web_search_results": "24 hours",
+      "sec_filings": "PERMANENT",
+      "patent_documents": "PERMANENT",
+      "historical_market_data": "PERMANENT",
+      "backtest_results": "PERMANENT"
+    },
+    "pre_caching": {
+      "enabled": true,
+      "auto_prefetch_on_startup": [
+        "Top 1000 most-cited quant finance papers",
+        "All Renaissance Technologies patents",
+        "All AQR research papers",
+        "All arXiv q-fin papers from last 90 days",
+        "All tier-1 fund 13F filings from last 2 years",
+        "All Nobel Prize winners' finance papers",
+        "Full QuantLib documentation",
+        "Full Papers With Code finance section"
+      ],
+      "background_refresh": {
+        "arxiv_q_fin": "Every 6 hours",
+        "ssrn_new_papers": "Daily",
+        "13f_filings": "Quarterly + 1 day",
+        "patent_office": "Weekly"
+      }
+    },
+    "cache_infrastructure": {
+      "L1_in_memory": {
+        "size_gb": 16,
+        "latency_target_ns": 100,
+        "contents": "Hot formulas, active strategies, current regime data"
+      },
+      "L2_ssd_cache": {
+        "size_gb": 500,
+        "latency_target_us": 50,
+        "contents": "All papers, all formulas, all backtest results"
+      },
+      "L3_disk_archive": {
+        "size_tb": 10,
+        "latency_target_ms": 10,
+        "contents": "Full historical archive, all research, all data"
+      }
+    }
+  },
+
+  "formula_discovery_speed": {
+    "target_metrics": {
+      "formulas_discovered_per_hour": 500,
+      "formulas_validated_per_hour": 250,
+      "formulas_implemented_per_day": 100,
+      "formulas_backtested_per_day": 50,
+      "formulas_deployed_per_week": 25,
+      "pro_plan_multiplier": "5x baseline performance"
+    },
+    "pipeline": {
+      "stage_1_discovery": {
+        "method": "Massive parallel web searches + multi-agent exploration",
+        "time_budget_minutes": 2,
+        "output": "2000+ candidate formulas",
+        "agents": 10
+      },
+      "stage_2_filtering": {
+        "method": "Ultra-fast validation scoring (parallel + GPU)",
+        "time_budget_minutes": 1,
+        "output": "500+ high-score formulas",
+        "agents": 5
+      },
+      "stage_3_implementation": {
+        "method": "Auto-generate Python code (massive parallel)",
+        "time_budget_minutes": 5,
+        "output": "250+ implemented formulas",
+        "agents": 10
+      },
+      "stage_4_backtesting": {
+        "method": "Distributed backtesting (5000+ cores)",
+        "time_budget_minutes": 10,
+        "output": "100+ profitable formulas (Sharpe > 1.5)",
+        "agents": 20
+      },
+      "stage_5_deployment": {
+        "method": "Auto-deploy if Sharpe > 2.0",
+        "time_budget_minutes": 2,
+        "output": "50+ strategies in paper trading",
+        "agents": 5
+      },
+      "total_time": "< 20 minutes from search to deployment - PRO PLAN SPEED",
+      "total_agents": "50 agents working in parallel"
+    }
+  },
+
+  "network_optimization": {
+    "connection_pooling": {
+      "enabled": true,
+      "pool_size": 200,
+      "keep_alive_seconds": 300,
+      "max_connections_per_host": 50
+    },
+    "http2_multiplexing": {
+      "enabled": true,
+      "max_concurrent_streams": 100
+    },
+    "dns_optimization": {
+      "cache_dns_lookups": true,
+      "cache_ttl_seconds": 3600,
+      "use_cloudflare_dns": "1.1.1.1 (fastest)"
+    },
+    "compression": {
+      "accept_encoding": "br, gzip, deflate",
+      "compress_requests": true,
+      "compress_responses": true
+    },
+    "tcp_optimization": {
+      "tcp_nodelay": true,
+      "tcp_fast_open": true,
+      "tcp_keepalive": true
+    }
+  },
+
+  "compute_optimization": {
+    "cpu": {
+      "use_all_cores": true,
+      "thread_pool_size": "4x CPU count - Pro plan",
+      "process_pool_size": "2x CPU count - Pro plan",
+      "pin_threads_to_cores": true,
+      "disable_hyperthreading_for_latency_critical": true,
+      "cpu_governor": "performance",
+      "turbo_boost": "always_on"
+    },
+    "memory": {
+      "preallocate_buffers": true,
+      "use_huge_pages": true,
+      "disable_swap": true,
+      "numa_aware_allocation": true,
+      "memory_pool_size_gb": 64,
+      "aggressive_prefetch": true
+    },
+    "io": {
+      "use_io_uring": true,
+      "async_io_everything": true,
+      "direct_io_for_large_files": true,
+      "readahead_optimization": true,
+      "nvme_optimization": true,
+      "raid_0_for_speed": true
+    },
+    "jit_compilation": {
+      "numba_jit_all_hot_paths": true,
+      "cython_for_critical_loops": true,
+      "pypy_if_no_numpy": false,
+      "llvm_optimization_level": 3,
+      "aggressive_inlining": true
+    },
+    "gpu_acceleration": {
+      "enabled": true,
+      "use_for": ["backtesting", "optimization", "ML_inference", "matrix_operations"],
+      "cuda_streams": 16,
+      "tensor_cores": true
+    }
+  },
+
+  "data_pipeline_speed": {
+    "ingestion": {
+      "parallel_data_feeds": 50,
+      "buffer_size_mb": 1024,
+      "batch_size_messages": 10000,
+      "latency_target_us": 100
+    },
+    "processing": {
+      "stream_processing": true,
+      "vectorized_operations": true,
+      "gpu_acceleration_when_available": true,
+      "fpga_for_pattern_matching": "aspirational"
+    },
+    "storage": {
+      "write_ahead_log": true,
+      "batch_writes": true,
+      "async_writes": true,
+      "compression_on_disk": "zstd (fastest)"
+    }
+  },
+
+  "backtesting_speed": {
+    "vectorized_backtesting": {
+      "enabled": true,
+      "library": "vectorbt-pro (fastest)",
+      "parallelization": "Across strategies AND parameters simultaneously"
+    },
+    "data_loading": {
+      "lazy_loading": false,
+      "preload_all_data": true,
+      "store_in_memory": true,
+      "cache_in_ssd": true
+    },
+    "optimization": {
+      "parallel_parameter_sweeps": true,
+      "bayesian_optimization_for_speed": true,
+      "early_stopping_for_losers": true,
+      "focus_compute_on_winners": true
+    }
+  },
+
+  "execution_speed": {
+    "order_routing": {
+      "smart_order_routing": true,
+      "latency_target_us": 100,
+      "parallel_venue_checks": true,
+      "precomputed_routes": true
+    },
+    "risk_checks": {
+      "latency_target_us": 10,
+      "pre_trade_risk": true,
+      "post_trade_risk": true,
+      "real_time_var": true
+    },
+    "market_data": {
+      "direct_exchange_feeds": true,
+      "consolidated_feed_backup": true,
+      "tick_to_signal_latency_target_us": 50,
+      "signal_to_order_latency_target_us": 25
+    }
+  },
+
+  "automation_for_speed": {
+    "zero_human_intervention": {
+      "enabled": true,
+      "auto_approve_validations": "If score > 3.0",
+      "auto_implement_formulas": "If institutional evidence exists",
+      "auto_backtest": "Always",
+      "auto_deploy_to_paper": "If Sharpe > 2.0",
+      "auto_kill_losers": "If Sharpe < 1.0 for 30 days",
+      "auto_scale_winners": "If Sharpe remains > 2.0"
+    },
+    "background_tasks": {
+      "continuous_arxiv_monitoring": "Every hour",
+      "continuous_github_scanning": "Every 6 hours",
+      "continuous_13f_analysis": "Quarterly + immediate",
+      "continuous_patent_mining": "Weekly",
+      "continuous_regime_detection": "Every minute",
+      "continuous_strategy_optimization": "Daily"
+    }
+  },
+
+  "monitoring_and_alerting": {
+    "real_time_dashboards": {
+      "latency_dashboard": {
+        "metrics": [
+          "Order to market (target < 100us)",
+          "Market data latency (target < 50us)",
+          "Risk check latency (target < 10us)",
+          "Backtest speed (strategies/hour)",
+          "Research speed (formulas/hour)"
+        ],
+        "refresh_rate_ms": 100
+      },
+      "throughput_dashboard": {
+        "metrics": [
+          "Trades per second (target > 1000)",
+          "Backtests per hour (target > 100)",
+          "Formulas discovered per day (target > 100)",
+          "Cache hit rate (target > 90%)",
+          "Parallel operations count (target > 500)"
+        ],
+        "refresh_rate_ms": 1000
+      }
+    },
+    "alerts": {
+      "latency_spike": "Alert if order latency > 200us",
+      "throughput_drop": "Alert if trades/sec < 100",
+      "cache_miss": "Alert if cache hit rate < 70%",
+      "backtest_slow": "Alert if backtest > 10 min",
+      "research_slow": "Alert if discovery < 10 formulas/hour"
+    }
+  },
+
+  "forbidden_slowness": {
+    "never": [
+      "Wait for sequential operations when parallel is possible",
+      "Refetch data that's already cached",
+      "Ask user for confirmation on standard operations",
+      "Use synchronous I/O for large operations",
+      "Load data you don't immediately need",
+      "Run single-threaded code on multi-core machines",
+      "Use interpreted code in hot paths",
+      "Ignore opportunities for vectorization",
+      "Store uncompressed data",
+      "Miss cache optimization opportunities"
+    ]
+  },
+
+  "speed_philosophy": {
+    "mantras": [
+      "Microseconds = millions - optimize everything",
+      "Parallel or die - sequential is for amateurs",
+      "Cache everything - never fetch twice",
+      "Fail fast - don't wait for stragglers",
+      "Precompute and cache - don't compute on demand",
+      "Vectorize or die - loops are slow",
+      "Async everything - blocking is failure",
+      "FPGA/GPU when possible - CPU is slow",
+      "Co-located or bust - network latency kills",
+      "Renaissance does 300K trades/day because they're FASTER"
+    ]
+  },
+
+  "success_metrics": {
+    "primary": {
+      "order_latency_us": "< 50 (target), < 100 (acceptable) - Pro plan",
+      "market_data_latency_us": "< 25 - Pro plan",
+      "trades_per_second": "> 5000 - Pro plan",
+      "formulas_per_hour": "> 500 discovered - Pro plan",
+      "backtests_per_hour": "> 500 completed - Pro plan"
+    },
+    "secondary": {
+      "cache_hit_rate_percent": "> 95",
+      "parallel_operations_count": "> 1500 concurrent - Pro plan",
+      "research_to_deployment_minutes": "< 20 - Pro plan",
+      "cpu_utilization_percent": "> 95",
+      "network_bandwidth_utilization_percent": "> 90",
+      "gpu_utilization_percent": "> 80",
+      "concurrent_agents": "> 20"
+    },
+    "quality_metrics": {
+      "code_quality": "Production-grade with tests",
+      "strategy_sharpe_threshold": "> 2.0",
+      "backtest_coverage": "Multiple regimes + walk-forward",
+      "institutional_validation": "Required for deployment",
+      "max_drawdown_threshold": "< 15%"
+    }
+  },
+
+  "integration": {
+    "memory_config": "Cache everything in tiered memory system",
+    "research_config": "Parallel searches across all sources simultaneously",
+    "vibe_coding": "Zero delays in algorithm development",
+    "settings": "Full autonomy = maximum speed"
+  },
+
+  "pro_plan_features": {
+    "investment": "$200+ commitment to excellence",
+    "unlocked_capabilities": [
+      "200K token context window - use fully",
+      "20+ concurrent agents",
+      "500+ parallel tool calls",
+      "5000+ parallel backtests",
+      "1500+ concurrent research operations",
+      "GPU acceleration",
+      "Unlimited API rate limits",
+      "Premium model access (Sonnet 4.5)",
+      "Advanced caching",
+      "Priority execution"
+    ],
+    "speed_multipliers": {
+      "research": "5x faster than baseline",
+      "backtesting": "10x faster with GPU",
+      "implementation": "5x faster with agents",
+      "deployment": "3x faster pipeline"
+    },
+    "quality_enhancements": {
+      "model": "claude-sonnet-4-5 - best reasoning",
+      "context": "200K tokens - maximum awareness",
+      "thinking": "Extended thinking enabled",
+      "validation": "Multi-agent validation",
+      "testing": "Comprehensive test coverage"
+    }
+  },
+
+  "final_mandate": {
+    "speed": "MAXIMUM - Pro plan removes all limits",
+    "quality": "MAXIMUM - Sonnet 4.5 with extended thinking",
+    "parallelization": "EXTREME - 20+ agents, 500+ tool calls",
+    "automation": "FULL - Zero human delays",
+    "investment_justification": "Every microsecond counts. $200 Pro plan = Renaissance-grade infrastructure."
+  }
+}

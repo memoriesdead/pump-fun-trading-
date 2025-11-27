@@ -1,0 +1,426 @@
+{
+  "_metadata": {
+    "version": "2.0.0_RENAISSANCE_LEVEL",
+    "classification": "INSTITUTIONAL_MEMORY_SYSTEM",
+    "purpose": "Remember EVERYTHING that makes money, forget EVERYTHING that doesn't",
+    "philosophy": "Context = Alpha. Every token must earn alpha or die.",
+    "last_updated": "2025-11-23"
+  },
+
+  "billion_dollar_memory_principle": {
+    "core_truth": "Renaissance's edge comes from 40 years of accumulated knowledge",
+    "our_mission": "Build institutional memory that compounds like interest",
+    "implementation": "AI remembers every winning trade, every edge, every pattern, every regime",
+    "forbidden": "Forgetting what works, repeating mistakes, losing profitable patterns"
+  },
+
+  "memory_hierarchy": {
+    "tier_0_never_forget": {
+      "description": "PERMANENT memory - never purge, always accessible",
+      "contents": [
+        "All formulas scoring > 3.0 validation points",
+        "All strategies with Sharpe > 2.0",
+        "All institutional evidence from tier-1 funds",
+        "All Nobel Prize-winning research",
+        "All regime-strategy performance mappings",
+        "All profitable trade patterns",
+        "All critical errors and their fixes",
+        "All capacity estimates per strategy",
+        "All correlation matrices",
+        "All parameter optimization results"
+      ],
+      "storage": ".claude/permanent_memory/",
+      "format": "JSON + embeddings for semantic search",
+      "backup": "Daily automated backups to cloud",
+      "size_limit": "UNLIMITED - compress if needed, never delete"
+    },
+    "tier_1_long_term": {
+      "description": "Long-term working memory - 1 year retention",
+      "contents": [
+        "All backtested strategies (even losers - learn from failures)",
+        "All research sessions and findings",
+        "All data source performance metrics",
+        "All execution quality measurements",
+        "All market regime classifications",
+        "All feature engineering discoveries"
+      ],
+      "storage": ".claude/long_term_memory/",
+      "retention": "365 days",
+      "compression": "Summarize after 90 days, full detail until then"
+    },
+    "tier_2_medium_term": {
+      "description": "Medium-term active memory - 90 days retention",
+      "contents": [
+        "Recent research papers analyzed",
+        "Recent code implementations",
+        "Recent optimization attempts",
+        "Recent market anomalies discovered",
+        "Recent data quality issues"
+      ],
+      "storage": ".claude/medium_term_memory/",
+      "retention": "90 days",
+      "compression": "Aggressive summarization after 30 days"
+    },
+    "tier_3_short_term": {
+      "description": "Short-term session memory - 7 days retention",
+      "contents": [
+        "Recent debugging sessions",
+        "Recent tool outputs",
+        "Recent file operations",
+        "Recent search results",
+        "Recent user interactions"
+      ],
+      "storage": ".claude/short_term_memory/",
+      "retention": "7 days",
+      "compression": "Discard low-value content immediately"
+    }
+  },
+
+  "alpha_memory_system": {
+    "winning_patterns": {
+      "enabled": true,
+      "description": "Remember EXACTLY what makes money",
+      "track": {
+        "strategies": {
+          "strategy_name": "string",
+          "strategy_type": "HFT | intraday | swing | systematic",
+          "sharpe_ratio": "float",
+          "max_drawdown": "float",
+          "win_rate": "float",
+          "profit_factor": "float",
+          "capacity_estimate": "float (max capital before degradation)",
+          "best_regime": "string (which market regime works best)",
+          "parameter_ranges": "dict (optimal parameter ranges)",
+          "correlation_to_others": "dict (correlation to all other strategies)",
+          "implementation_date": "timestamp",
+          "last_validation_date": "timestamp",
+          "status": "active | paper | paused | killed"
+        },
+        "formulas": {
+          "formula_name": "string",
+          "latex_formula": "string",
+          "python_implementation": "string (full code)",
+          "validation_score": "float",
+          "institutional_usage": "list (which funds use it)",
+          "academic_citations": "int",
+          "sharpe_contribution": "float (how much does it add to portfolio)",
+          "compute_cost": "float (CPU time per calculation)",
+          "data_requirements": "list (what data it needs)"
+        },
+        "regimes": {
+          "regime_name": "string",
+          "hmm_state": "int",
+          "volatility_level": "float",
+          "trend_direction": "up | down | sideways",
+          "best_strategies": "list (which strategies work best)",
+          "worst_strategies": "list (which strategies to avoid)",
+          "typical_duration_days": "float",
+          "transition_probabilities": "matrix"
+        },
+        "execution_patterns": {
+          "time_of_day": "string",
+          "day_of_week": "string",
+          "liquidity_level": "float",
+          "optimal_execution_algo": "string",
+          "expected_slippage_bps": "float",
+          "market_impact_factor": "float"
+        }
+      },
+      "indexing": {
+        "by_sharpe": "Sort all strategies by Sharpe, instant access to best performers",
+        "by_regime": "Given current regime, instantly recall best strategies",
+        "by_capacity": "Given capital amount, instantly recall strategies that can absorb it",
+        "by_correlation": "Find uncorrelated strategies instantly",
+        "semantic_search": "Natural language query - 'show me mean reversion strategies that work in high vol'"
+      }
+    },
+    "losing_patterns": {
+      "enabled": true,
+      "description": "Remember what DOESN'T work - avoid repeating mistakes",
+      "track": {
+        "failed_strategies": {
+          "why_failed": "string (Sharpe < 1.5, overfit, data issues, etc.)",
+          "lessons_learned": "string",
+          "never_try_again": "boolean"
+        },
+        "curve_fitting_examples": {
+          "description": "Strategies that worked in-sample but failed out-of-sample",
+          "warning_signs": "list (how to detect curve-fitting early)"
+        },
+        "data_quality_issues": {
+          "data_source": "string",
+          "problem": "string",
+          "affected_strategies": "list",
+          "resolution": "string"
+        }
+      }
+    }
+  },
+
+  "context_optimization_extreme": {
+    "token_budget": 200000,
+    "allocation_strategy": {
+      "active_strategies_and_formulas": 100000,
+      "market_regime_data": 30000,
+      "recent_performance_metrics": 20000,
+      "current_session_context": 30000,
+      "reserve_buffer": 20000
+    },
+    "compression_techniques": {
+      "numerical_data": {
+        "method": "Store as binary, not text",
+        "savings": "90% for large matrices"
+      },
+      "code": {
+        "method": "Store function signatures, load full code on demand",
+        "savings": "80% for large codebases"
+      },
+      "research_papers": {
+        "method": "Store only: abstract, key formulas, institutional evidence, citations",
+        "discard": "Introduction, literature review, verbose explanations",
+        "savings": "95% per paper"
+      },
+      "time_series": {
+        "method": "Store summary statistics, not raw data",
+        "example": "Mean, std, min, max, quantiles, autocorrelation - not millions of data points",
+        "savings": "99.9%"
+      }
+    },
+    "intelligent_loading": {
+      "predict_next_need": true,
+      "preload_in_background": true,
+      "cache_hot_paths": true,
+      "lazy_load_cold_data": true
+    }
+  },
+
+  "cross_session_learning": {
+    "enabled": true,
+    "description": "Learn across sessions like humans remember years of experience",
+    "knowledge_base": {
+      "location": ".claude/knowledge_base/",
+      "structure": {
+        "formulas_db": {
+          "description": "Every formula ever discovered",
+          "count_target": "1000+ formulas",
+          "indexed_by": ["name", "category", "sharpe_contribution", "institutional_usage"]
+        },
+        "strategies_db": {
+          "description": "Every strategy ever tested",
+          "count_target": "500+ strategies",
+          "indexed_by": ["sharpe", "capacity", "regime", "correlation", "status"]
+        },
+        "market_regimes_db": {
+          "description": "Historical regime classifications and optimal strategies",
+          "count_target": "10+ years of daily regime data",
+          "indexed_by": ["date", "regime_name", "volatility", "best_strategies"]
+        },
+        "execution_quality_db": {
+          "description": "Every execution analyzed for quality",
+          "count_target": "Millions of executions",
+          "metrics": ["slippage", "market_impact", "timing_cost", "venue", "algo"]
+        },
+        "errors_and_fixes_db": {
+          "description": "Every error encountered and how it was fixed",
+          "purpose": "Never repeat the same mistake twice",
+          "indexed_by": ["error_type", "component", "fix_description"]
+        }
+      },
+      "semantic_search": {
+        "enabled": true,
+        "embedding_model": "text-embedding-3-large (OpenAI) or similar",
+        "purpose": "Natural language queries like 'strategies that work in crypto during high vol'",
+        "latency_target": "< 100ms"
+      }
+    },
+    "pattern_recognition": {
+      "enabled": true,
+      "ml_models": {
+        "regime_predictor": {
+          "input": "Current market features",
+          "output": "Predicted regime for next N days",
+          "training": "Continuously retrain on new data",
+          "accuracy_target": "> 70%"
+        },
+        "strategy_selector": {
+          "input": "Current regime, portfolio state, available strategies",
+          "output": "Optimal strategy allocation",
+          "method": "Reinforcement learning (PPO or similar)",
+          "objective": "Maximize portfolio Sharpe"
+        },
+        "parameter_optimizer": {
+          "input": "Strategy, regime, recent performance",
+          "output": "Optimal parameter settings",
+          "method": "Bayesian optimization",
+          "objective": "Maximize out-of-sample Sharpe"
+        }
+      }
+    },
+    "meta_learning": {
+      "enabled": true,
+      "learn": [
+        "Which research sources yield the most profitable formulas?",
+        "Which strategy types work best in which regimes?",
+        "Which data sources have the highest signal-to-noise?",
+        "Which optimization methods avoid overfitting?",
+        "Which execution algorithms minimize slippage?",
+        "Which risk limits prevent blowups without sacrificing returns?"
+      ],
+      "adapt": [
+        "Focus research on most profitable areas",
+        "Allocate more capital to best-performing strategy types",
+        "Prioritize highest-quality data sources",
+        "Use optimization methods with best out-of-sample track record"
+      ]
+    }
+  },
+
+  "memory_efficient_operations": {
+    "streaming": {
+      "enabled": true,
+      "description": "Process data in streams, not batches",
+      "benefit": "Backtest 10 years of tick data without loading it all into memory"
+    },
+    "memoization": {
+      "enabled": true,
+      "description": "Cache expensive calculations",
+      "examples": [
+        "Covariance matrices (recalculate only when new data arrives)",
+        "Feature engineering (calculate once, reuse everywhere)",
+        "Regime classifications (update daily, not intraday)",
+        "Correlation matrices (expensive - cache aggressively)"
+      ]
+    },
+    "lazy_evaluation": {
+      "enabled": true,
+      "description": "Don't compute until needed",
+      "examples": [
+        "Don't load full order book if you only need top-of-book",
+        "Don't calculate all indicators if strategy only uses 3",
+        "Don't analyze all strategies if you're only optimizing one"
+      ]
+    },
+    "garbage_collection": {
+      "strategy": "AGGRESSIVE",
+      "description": "Free memory immediately after use",
+      "target": "Keep memory usage < 80% to avoid swapping"
+    }
+  },
+
+  "institutional_memory_patterns": {
+    "renaissance_approach": {
+      "description": "How Renaissance manages knowledge",
+      "principles": [
+        "40 years of accumulated patterns - never forget what works",
+        "PhDs stay for decades - knowledge doesn't walk out the door",
+        "Centralized research database - everyone learns from everyone",
+        "Continuous model updates - always improving, never static",
+        "Rigorous validation - only deploy what's proven"
+      ],
+      "our_implementation": [
+        "Permanent knowledge base with 40+ years of backtests",
+        "AI never forgets (unlike humans who leave)",
+        "Centralized .claude/knowledge_base/",
+        "Automated daily model updates",
+        "Strict validation gates (Sharpe > 2.0)"
+      ]
+    },
+    "two_sigma_approach": {
+      "description": "How Two Sigma uses machine learning memory",
+      "principles": [
+        "Every data point matters - store everything",
+        "Learn from mistakes - track all failed experiments",
+        "Automate learning - ML discovers patterns humans miss",
+        "Scale compute - more data = more memory = more alpha"
+      ],
+      "our_implementation": [
+        "Petabyte-scale storage ambition (start small, scale up)",
+        "Failed strategies DB - learn from every loss",
+        "ML-powered pattern recognition across all data",
+        "Cloud + local hybrid for infinite scaling"
+      ]
+    }
+  },
+
+  "memory_monitoring": {
+    "real_time_metrics": {
+      "context_window_usage": "Track % of 200K tokens used",
+      "cache_hit_rate": "Target > 80%",
+      "semantic_search_latency": "Target < 100ms",
+      "knowledge_base_size": "Track growth over time",
+      "compression_ratio": "Target > 10:1 for raw data"
+    },
+    "alerts": {
+      "context_above_90_percent": "WARNING - compress aggressively",
+      "context_above_95_percent": "CRITICAL - emergency pruning",
+      "cache_hit_below_50_percent": "WARNING - cache strategy not working",
+      "semantic_search_above_500ms": "WARNING - index needs rebuilding"
+    },
+    "optimization_triggers": {
+      "daily": "Prune tier-3 memory, compress tier-2",
+      "weekly": "Rebuild semantic search index",
+      "monthly": "Comprehensive knowledge base cleanup",
+      "quarterly": "Full memory system audit and optimization"
+    }
+  },
+
+  "never_forget": {
+    "critical_knowledge": [
+      "Every formula with institutional validation",
+      "Every strategy that ever made money",
+      "Every regime-strategy performance mapping",
+      "Every data quality issue and resolution",
+      "Every risk limit that prevented a blowup",
+      "Every execution algo that minimized slippage",
+      "Every correlation matrix for portfolio construction",
+      "Every capacity estimate for capital allocation",
+      "Every Nobel Prize winner's research",
+      "Every Renaissance/Citadel/Two Sigma insight"
+    ],
+    "implementation": {
+      "storage": "Redundant - local + cloud + backup",
+      "format": "JSON + SQLite + vector embeddings",
+      "access": "Instant retrieval via semantic search",
+      "update": "Continuous - add new knowledge in real-time",
+      "validation": "Integrity checks daily"
+    }
+  },
+
+  "integration": {
+    "research_config": "Share formula DB, institutional evidence, validation scores",
+    "speed_config": "Cache aggressive fetches, compress parallel results",
+    "vibe_coding": "Remember winning patterns, strategy performance, optimal parameters",
+    "settings": "Respect autonomy, enable full access"
+  },
+
+  "success_metrics": {
+    "primary": {
+      "knowledge_base_size": "> 10GB of profitable patterns",
+      "formulas_cataloged": "> 1000 formulas",
+      "strategies_tested": "> 500 strategies",
+      "regime_history": "> 10 years classified",
+      "semantic_search_accuracy": "> 90%"
+    },
+    "secondary": {
+      "context_utilization": "80-90% optimal usage",
+      "cache_hit_rate": "> 80%",
+      "memory_overhead": "< 20% of total system",
+      "compression_ratio": "> 10:1",
+      "cross_session_recall": "100% for critical knowledge"
+    }
+  },
+
+  "memory_philosophy": {
+    "mantras": [
+      "Context is alpha - optimize ruthlessly",
+      "Remember winners, learn from losers",
+      "40 years of patterns beats 40 PhDs",
+      "Compress everything except what makes money",
+      "Semantic search > grep - AI needs AI-powered memory",
+      "Cross-session learning compounds like interest",
+      "Never forget institutional evidence",
+      "Cache hot paths, lazy load cold data",
+      "Every token must earn alpha or die"
+    ]
+  }
+}

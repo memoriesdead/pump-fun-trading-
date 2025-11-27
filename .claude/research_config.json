@@ -1,0 +1,1732 @@
+{
+  "_metadata": {
+    "version": "2.0.0",
+    "last_updated": "2025-11-23",
+    "classification": "INSTITUTIONAL_GRADE",
+    "organization": "Quantitative Research Division",
+    "purpose": "Mathematical alpha discovery and validation framework"
+  },
+
+  "research_infrastructure": {
+    "tier_classification": {
+      "tier_0_primary": {
+        "description": "Peer-reviewed academic sources - ground truth",
+        "min_citations": 100,
+        "min_impact_factor": 2.0,
+        "validation_required": true,
+        "sources": [
+          {
+            "name": "arXiv Quantitative Finance",
+            "domain": "arxiv.org",
+            "categories": ["q-fin.TR", "q-fin.PM", "q-fin.CP", "q-fin.ST", "q-fin.MF"],
+            "priority": 1,
+            "refresh_cadence_hours": 6,
+            "search_operators": {
+              "domain_filter": "site:arxiv.org",
+              "category_filter": "cat:q-fin.*",
+              "date_filter": "YYYY..YYYY",
+              "author_filter": "au:\"lastname\""
+            }
+          },
+          {
+            "name": "SSRN Financial Economics Network",
+            "domain": "ssrn.com",
+            "networks": ["FEN", "FMA", "AFA"],
+            "priority": 1,
+            "min_downloads": 100,
+            "search_operators": {
+              "domain_filter": "site:papers.ssrn.com",
+              "network_filter": "Financial Economics Network",
+              "date_filter": "after:YYYY-MM-DD"
+            }
+          },
+          {
+            "name": "NBER Working Papers",
+            "domain": "nber.org",
+            "programs": ["AP", "CF", "EFG", "ME"],
+            "priority": 1,
+            "institutional_backing": "National Bureau of Economic Research",
+            "search_operators": {
+              "domain_filter": "site:nber.org/papers",
+              "program_filter": "program:asset_pricing"
+            }
+          },
+          {
+            "name": "Google Scholar",
+            "domain": "scholar.google.com",
+            "priority": 2,
+            "use_case": "Citation tracking, h-index validation",
+            "search_operators": {
+              "cited_by": "cites:paper_id",
+              "author_filter": "author:\"name\"",
+              "year_filter": "as_ylo=YYYY&as_yhi=YYYY"
+            }
+          }
+        ]
+      },
+
+      "tier_1_institutional": {
+        "description": "Proprietary research from tier-1 quantitative funds",
+        "validation": "Cross-reference with SEC filings, patents, academic papers",
+        "sources": [
+          {
+            "name": "Renaissance Technologies",
+            "research_outlets": [
+              "James Simons lectures (MIT, IAS, Stony Brook)",
+              "USPTO patents (assignee:Renaissance Technologies)",
+              "SEC Form ADV Part 2A",
+              "Academic papers by Simons, Laufer, Brown, Mercer"
+            ],
+            "search_strategies": [
+              "\"renaissance technologies\" patent site:uspto.gov",
+              "\"james simons\" lecture mathematical models",
+              "\"robert mercer\" \"peter brown\" speech algorithm",
+              "renaissance technologies SEC filing strategy",
+              "simons lecture MIT stony brook IAS video"
+            ],
+            "known_techniques": [
+              "Hidden Markov Models (regime detection)",
+              "Kernel methods (pattern recognition)",
+              "Signal processing (wavelets, Fourier)",
+              "Error correction models (cointegration)",
+              "Natural language processing (news sentiment)",
+              "Network analysis (correlation graphs)"
+            ],
+            "validation_sources": [
+              "\"The Man Who Solved the Market\" Gregory Zuckerman",
+              "Simons MIT lecture transcripts",
+              "Renaissance patent applications 2000-2025"
+            ]
+          },
+          {
+            "name": "Two Sigma Investments",
+            "research_outlets": [
+              "Two Sigma Street Fight blog",
+              "Academic research portal",
+              "USPTO patents (assignee:Two Sigma)",
+              "Venn by Two Sigma research papers"
+            ],
+            "search_strategies": [
+              "site:twosigma.com research papers",
+              "\"two sigma\" patent machine learning site:uspto.gov",
+              "\"two sigma\" academic collaboration published",
+              "venn two sigma factor research"
+            ],
+            "known_techniques": [
+              "Distributed machine learning at scale",
+              "Alternative data integration (satellite, web scraping)",
+              "Deep learning for alpha discovery",
+              "Real-time factor modeling",
+              "Execution optimization algorithms"
+            ]
+          },
+          {
+            "name": "DE Shaw & Co",
+            "research_outlets": [
+              "DESCO research publications",
+              "USPTO patents",
+              "Academic hiring (PhD talent acquisition signals)"
+            ],
+            "search_strategies": [
+              "\"de shaw\" quantitative research published",
+              "\"de shaw\" patent computational finance",
+              "\"david shaw\" algorithm strategy"
+            ],
+            "known_techniques": [
+              "Statistical arbitrage (pairs trading at scale)",
+              "Fixed income relative value",
+              "Computational biochemistry crossover techniques",
+              "Massively parallel computing for backtesting"
+            ]
+          },
+          {
+            "name": "Citadel LLC",
+            "divisions": ["Citadel Securities (market making)", "Citadel Global Equities", "Citadel Fixed Income"],
+            "research_outlets": [
+              "Citadel Securities research",
+              "Academic partnerships (UChicago, MIT)",
+              "USPTO patents"
+            ],
+            "search_strategies": [
+              "\"citadel securities\" market making algorithm",
+              "\"ken griffin\" quantitative strategy",
+              "citadel patent high frequency trading site:uspto.gov",
+              "citadel optimal execution research"
+            ],
+            "known_techniques": [
+              "Market making (Avellaneda-Stoikov variants)",
+              "Optimal execution (Almgren-Chriss extensions)",
+              "Volatility arbitrage (options flow)",
+              "Cross-asset statistical arbitrage",
+              "Intraday momentum (HFT signals)"
+            ]
+          },
+          {
+            "name": "Jane Street Capital",
+            "research_outlets": [
+              "Jane Street Tech Blog",
+              "OCaml financial libraries",
+              "Academic collaborations"
+            ],
+            "search_strategies": [
+              "site:janestreet.com tech blog quantitative",
+              "\"jane street\" options market making",
+              "\"jane street\" OCaml financial modeling",
+              "jane street ETF arbitrage research"
+            ],
+            "known_techniques": [
+              "Options market making (multi-asset)",
+              "ETF arbitrage (creation/redemption inefficiencies)",
+              "Functional programming for reliability (OCaml/Haskell)",
+              "Bayesian inference for pricing",
+              "Queue position optimization"
+            ]
+          },
+          {
+            "name": "PDT Partners",
+            "parent": "Formerly part of Morgan Stanley",
+            "search_strategies": [
+              "\"PDT partners\" quantitative strategy",
+              "\"peter muller\" algorithmic trading morgan stanley"
+            ],
+            "known_techniques": [
+              "Statistical arbitrage (equity pairs)",
+              "Quantitative momentum strategies",
+              "Mean reversion models"
+            ]
+          },
+          {
+            "name": "Jump Trading",
+            "divisions": ["Jump Trading (HFT)", "Jump Capital (VC)"],
+            "search_strategies": [
+              "\"jump trading\" high frequency market making",
+              "\"jump trading\" low latency algorithm"
+            ],
+            "known_techniques": [
+              "Ultra-low latency market making",
+              "FPGA-based trading",
+              "Cross-exchange arbitrage (crypto/traditional)",
+              "Microstructure modeling (order book dynamics)"
+            ]
+          }
+        ]
+      },
+
+      "tier_2_systematic_managers": {
+        "description": "Systematic funds with published research",
+        "sources": [
+          {
+            "name": "AQR Capital Management",
+            "research_portal": "https://www.aqr.com/Insights/Research",
+            "public_research": true,
+            "search_strategies": [
+              "site:aqr.com research papers momentum value",
+              "\"cliff asness\" \"20 for twenty\" published",
+              "AQR white paper factor investing"
+            ],
+            "known_techniques": [
+              "Fama-French factor models (3/5/6-factor)",
+              "Momentum everywhere (time-series & cross-sectional)",
+              "Value and momentum crash risk",
+              "Carry trade strategies (FX, fixed income)",
+              "Quality minus junk (QMJ factor)",
+              "Betting against beta (BAB factor)"
+            ],
+            "key_researchers": [
+              "Cliff Asness (founder, momentum/value)",
+              "Antti Ilmanen (expected returns)",
+              "John Liew (factor investing)",
+              "David Kabiller (portfolio construction)"
+            ]
+          },
+          {
+            "name": "Man AHL",
+            "parent": "Man Group plc",
+            "search_strategies": [
+              "site:man.com/ahl research",
+              "\"man ahl\" trend following CTA",
+              "man group quantitative research published"
+            ],
+            "known_techniques": [
+              "Trend following (time-series momentum)",
+              "Dynamic volatility targeting",
+              "Multi-asset futures strategies",
+              "Machine learning for signal generation",
+              "Risk parity across asset classes"
+            ]
+          },
+          {
+            "name": "Millennium Management",
+            "structure": "Multi-PM platform (100+ portfolio managers)",
+            "search_strategies": [
+              "\"millennium management\" quantitative pod",
+              "\"izzy englander\" systematic strategy"
+            ],
+            "known_techniques": [
+              "Statistical arbitrage (equity neutral)",
+              "Event-driven quantitative strategies",
+              "Multi-strategy portfolio construction",
+              "Risk management (pod-level risk limits)"
+            ]
+          },
+          {
+            "name": "Bridgewater Associates",
+            "founder": "Ray Dalio",
+            "search_strategies": [
+              "\"bridgewater associates\" economic machine",
+              "\"ray dalio\" principles systematic",
+              "bridgewater pure alpha strategy"
+            ],
+            "known_techniques": [
+              "Global macro systematic (Pure Alpha)",
+              "Risk parity (All Weather)",
+              "Economic regime modeling",
+              "Beta separation (alpha overlay)",
+              "Correlation-based portfolio construction"
+            ]
+          },
+          {
+            "name": "WorldQuant",
+            "founder": "Igor Tulchinsky (ex-Millennium)",
+            "search_strategies": [
+              "worldquant alpha research",
+              "\"igor tulchinsky\" quantitative strategy",
+              "worldquant brain platform"
+            ],
+            "known_techniques": [
+              "Alpha discovery platform (crowdsourced signals)",
+              "Short-term alpha signals (equity)",
+              "Machine learning ensemble methods",
+              "Alternative data integration"
+            ]
+          }
+        ]
+      },
+
+      "tier_3_academic_institutions": {
+        "description": "PhD-level research from top quantitative finance programs",
+        "institutions": [
+          {
+            "name": "MIT Sloan School of Management",
+            "programs": ["PhD Finance", "Master of Finance (MFin)"],
+            "search_strategies": [
+              "MIT PhD dissertation quantitative finance filetype:pdf",
+              "site:mit.edu/~lo/ financial markets",
+              "MIT Sloan finance working paper"
+            ],
+            "key_faculty": [
+              "Andrew Lo (adaptive markets hypothesis)",
+              "Jiang Wang (asset pricing)",
+              "Leonid Kogan (continuous-time models)"
+            ]
+          },
+          {
+            "name": "Princeton University - Bendheim Center",
+            "focus": "Financial mathematics, operations research",
+            "search_strategies": [
+              "Princeton PhD finance filetype:pdf",
+              "bendheim center working paper",
+              "princeton ORFE quantitative finance"
+            ],
+            "key_faculty": [
+              "Markus Brunnermeier (financial crises)",
+              "Harrison Hong (behavioral finance)",
+              "Yacine Aït-Sahalia (high-frequency econometrics)"
+            ]
+          },
+          {
+            "name": "Stanford Graduate School of Business",
+            "search_strategies": [
+              "Stanford PhD finance dissertation filetype:pdf",
+              "site:stanford.edu/~duffie/ financial models"
+            ],
+            "key_faculty": [
+              "Darrell Duffie (credit risk, derivatives)",
+              "Kenneth Singleton (dynamic asset pricing)"
+            ]
+          },
+          {
+            "name": "CMU Tepper School of Business",
+            "strength": "Computational finance, ML for finance",
+            "search_strategies": [
+              "CMU computational finance thesis",
+              "carnegie mellon MSCF research"
+            ]
+          },
+          {
+            "name": "UC Berkeley Haas",
+            "search_strategies": [
+              "berkeley haas finance working paper",
+              "UC berkeley PhD finance filetype:pdf"
+            ]
+          },
+          {
+            "name": "University of Chicago Booth",
+            "strength": "Birthplace of efficient markets, factor models",
+            "search_strategies": [
+              "chicago booth finance working paper",
+              "\"eugene fama\" \"kenneth french\" factor research"
+            ],
+            "key_faculty": [
+              "Eugene Fama (efficient markets, factors - Nobel 2013)",
+              "John Cochrane (asset pricing)",
+              "Lars Peter Hansen (econometrics - Nobel 2013)"
+            ]
+          },
+          {
+            "name": "Columbia Business School",
+            "search_strategies": [
+              "columbia business school finance working paper",
+              "site:columbia.edu/~mh2078/ quantitative"
+            ]
+          },
+          {
+            "name": "NYU Stern / Courant Institute",
+            "strength": "Mathematical finance, derivatives",
+            "search_strategies": [
+              "NYU Courant mathematical finance thesis",
+              "site:math.nyu.edu/faculty finance research"
+            ],
+            "key_faculty": [
+              "Robert Engle (GARCH - Nobel 2003)",
+              "Viral Acharya (systemic risk)"
+            ]
+          },
+          {
+            "name": "Oxford Mathematical Finance",
+            "search_strategies": [
+              "oxford mathematical finance working paper",
+              "oxford man institute quantitative research"
+            ]
+          },
+          {
+            "name": "Cambridge Judge Business School",
+            "search_strategies": [
+              "cambridge judge finance research",
+              "cambridge quantitative finance centre"
+            ]
+          },
+          {
+            "name": "Imperial College London",
+            "strength": "Mathematical finance, risk management",
+            "search_strategies": [
+              "imperial college mathematical finance thesis",
+              "imperial risk management research"
+            ]
+          },
+          {
+            "name": "Baruch College (CUNY)",
+            "program": "MFE (Masters in Financial Engineering)",
+            "search_strategies": [
+              "baruch MFE research papers",
+              "site:baruch.cuny.edu/faculty finance"
+            ],
+            "key_faculty": [
+              "Jim Gatheral (volatility surface modeling)"
+            ]
+          }
+        ]
+      },
+
+      "tier_4_regulatory_central_banks": {
+        "description": "Regulatory filings and central bank research",
+        "sources": [
+          {
+            "name": "SEC (Securities and Exchange Commission)",
+            "filings": ["13F (institutional holdings)", "Form ADV (RIA disclosures)", "8-K (material events)"],
+            "search_strategies": [
+              "site:sec.gov/Archives/edgar 13F renaissance",
+              "site:sec.gov form ADV quantitative strategy"
+            ],
+            "use_case": "Reverse-engineer strategies from position disclosures"
+          },
+          {
+            "name": "USPTO (US Patent Office)",
+            "search_strategies": [
+              "site:uspto.gov assignee:\"Renaissance Technologies\"",
+              "site:uspto.gov financial trading algorithm patent"
+            ],
+            "use_case": "Discover proprietary techniques from patent claims"
+          },
+          {
+            "name": "Federal Reserve Research",
+            "divisions": ["FEDS (Finance and Economics Discussion Series)", "IFDP (International Finance)"],
+            "search_strategies": [
+              "site:federalreserve.gov/econres quantitative finance",
+              "federal reserve working paper market microstructure"
+            ]
+          },
+          {
+            "name": "Bank for International Settlements (BIS)",
+            "search_strategies": [
+              "site:bis.org working paper trading",
+              "BIS quarterly review market structure"
+            ]
+          },
+          {
+            "name": "European Central Bank (ECB)",
+            "search_strategies": [
+              "site:ecb.europa.eu working paper high frequency",
+              "ECB financial stability review"
+            ]
+          }
+        ]
+      },
+
+      "tier_5_implementation_code": {
+        "description": "Production-grade implementations for validation",
+        "sources": [
+          {
+            "name": "QuantLib",
+            "language": "C++",
+            "domain": "quantlib.org",
+            "search_strategies": [
+              "site:quantlib.org documentation Heston model",
+              "quantlib C++ implementation bond pricing"
+            ],
+            "validation": "Industry-standard library used by banks, hedge funds"
+          },
+          {
+            "name": "GitHub Academic Repositories",
+            "search_strategies": [
+              "site:github.com Heston model Python stars:>100",
+              "site:github.com optimal execution Almgren Chriss",
+              "site:github.com temporal fusion transformer finance"
+            ],
+            "filters": {
+              "min_stars": 100,
+              "min_forks": 20,
+              "active_maintenance": "commits within 6 months",
+              "license": ["MIT", "Apache-2.0", "BSD"]
+            }
+          },
+          {
+            "name": "Papers With Code",
+            "domain": "paperswithcode.com",
+            "search_strategies": [
+              "site:paperswithcode.com financial time series",
+              "site:paperswithcode.com reinforcement learning trading"
+            ],
+            "validation": "Links academic papers to working implementations"
+          }
+        ]
+      }
+    },
+
+    "journal_impact_factors": {
+      "tier_S_elite": [
+        {
+          "name": "Journal of Finance",
+          "impact_factor": 7.6,
+          "publisher": "American Finance Association",
+          "search": "\"Journal of Finance\" [topic]",
+          "acceptance_rate": "6%",
+          "prestige": "Top-1 finance journal"
+        },
+        {
+          "name": "Journal of Financial Economics",
+          "impact_factor": 6.4,
+          "search": "\"Journal of Financial Economics\" [topic]",
+          "acceptance_rate": "7%",
+          "prestige": "Top-3 finance journal"
+        },
+        {
+          "name": "Review of Financial Studies",
+          "impact_factor": 5.2,
+          "search": "\"Review of Financial Studies\" [topic]",
+          "acceptance_rate": "8%",
+          "prestige": "Top-3 finance journal"
+        },
+        {
+          "name": "Econometrica",
+          "impact_factor": 6.1,
+          "publisher": "Econometric Society",
+          "search": "\"Econometrica\" [topic]",
+          "acceptance_rate": "4%",
+          "prestige": "Top-1 econometrics journal"
+        }
+      ],
+      "tier_A_quantitative": [
+        {
+          "name": "Mathematical Finance",
+          "impact_factor": 1.6,
+          "search": "\"Mathematical Finance\" journal [topic]",
+          "prestige": "Top quantitative finance theory"
+        },
+        {
+          "name": "Finance and Stochastics",
+          "impact_factor": 1.9,
+          "search": "\"Finance and Stochastics\" [topic]",
+          "prestige": "Continuous-time models"
+        },
+        {
+          "name": "Quantitative Finance",
+          "impact_factor": 1.3,
+          "search": "\"Quantitative Finance\" journal [topic]",
+          "prestige": "Practitioner-focused"
+        },
+        {
+          "name": "Journal of Computational Finance",
+          "search": "\"Journal of Computational Finance\" [topic]",
+          "prestige": "Numerical methods, implementation"
+        }
+      ],
+      "tier_B_applied": [
+        {
+          "name": "Journal of Portfolio Management",
+          "search": "\"Journal of Portfolio Management\" [topic]",
+          "audience": "Institutional investors"
+        },
+        {
+          "name": "Journal of Derivatives",
+          "search": "\"Journal of Derivatives\" [topic]",
+          "audience": "Derivatives practitioners"
+        },
+        {
+          "name": "Risk Magazine",
+          "search": "\"Risk Magazine\" [topic]",
+          "audience": "Risk managers, quants"
+        },
+        {
+          "name": "Journal of Trading",
+          "search": "\"Journal of Trading\" [topic]",
+          "audience": "Trading professionals"
+        }
+      ]
+    }
+  },
+
+  "search_operators_advanced": {
+    "google_scholar": {
+      "cited_by_minimum": 100,
+      "h_index_minimum": 10,
+      "operators": {
+        "author": "author:\"lastname, firstname\"",
+        "cited_by": "cites:paper_id",
+        "year_range": "as_ylo=2020&as_yhi=2025",
+        "exclude_patents": "-patent",
+        "exact_phrase": "\"exact phrase in quotes\""
+      }
+    },
+    "arxiv": {
+      "categories": ["q-fin.TR", "q-fin.PM", "q-fin.CP", "q-fin.ST", "q-fin.MF", "q-fin.GN"],
+      "operators": {
+        "category": "cat:q-fin.TR",
+        "author": "au:lastname",
+        "title": "ti:\"keyword\"",
+        "abstract": "abs:\"keyword\"",
+        "date_range": "submittedDate:[202001010000+TO+202512312359]"
+      }
+    },
+    "advanced_filters": {
+      "domain_restriction": "site:domain.com OR site:domain2.edu",
+      "file_type": "filetype:pdf",
+      "date_range": "after:2020-01-01 before:2025-12-31",
+      "exact_phrase": "\"exact phrase\"",
+      "exclude_terms": "-term1 -term2",
+      "wildcard": "quant* finance",
+      "boolean": "(machine learning OR deep learning) AND trading"
+    }
+  },
+
+  "validation_framework": {
+    "minimum_criteria": {
+      "academic_validation": {
+        "peer_reviewed": true,
+        "min_citations": 100,
+        "min_impact_factor": 1.0,
+        "replication_studies_exist": "preferred"
+      },
+      "institutional_validation": {
+        "tier_1_fund_usage": "at_least_one",
+        "sec_filing_evidence": "preferred",
+        "patent_application": "preferred",
+        "industry_adoption": "documented"
+      },
+      "performance_validation": {
+        "backtest_sharpe_min": 1.5,
+        "out_of_sample_tested": true,
+        "walk_forward_validated": true,
+        "live_trading_evidence": "preferred"
+      }
+    },
+    "scoring_rubric": {
+      "tier_0_must_implement": {
+        "score_threshold": 0.9,
+        "criteria": [
+          "Nobel Prize-winning research",
+          "Used by 3+ tier-1 funds",
+          "Cited 1000+ times",
+          "Proven live performance with $10B+ AUM"
+        ]
+      },
+      "tier_1_high_priority": {
+        "score_threshold": 0.7,
+        "criteria": [
+          "Used by 1+ tier-1 fund",
+          "Cited 500+ times",
+          "Published in tier-S journal",
+          "Proven backtest sharpe > 2.0"
+        ]
+      },
+      "tier_2_medium_priority": {
+        "score_threshold": 0.5,
+        "criteria": [
+          "Used by 1+ tier-2 fund",
+          "Cited 100+ times",
+          "Published in tier-A journal",
+          "Implementation available (GitHub)"
+        ]
+      },
+      "tier_3_research_only": {
+        "score_threshold": 0.3,
+        "criteria": [
+          "Recent publication (2020+)",
+          "Cited 50+ times",
+          "Novel approach",
+          "Potential for future adoption"
+        ]
+      }
+    }
+  },
+
+  "execution_strategies": {
+    "parallel_research": {
+      "max_concurrent_fetches": 10,
+      "timeout_seconds": 30,
+      "retry_logic": {
+        "max_retries": 3,
+        "exponential_backoff": true,
+        "backoff_multiplier": 2
+      }
+    },
+    "query_templates": {
+      "era_based": {
+        "1900_1950_foundations": [
+          "Bachelier 1900 theory speculation mathematics",
+          "random walk hypothesis pre-1950 finance",
+          "Kendall 1953 analysis economic time series"
+        ],
+        "1950_1970_portfolio_theory": [
+          "Markowitz 1952 portfolio selection",
+          "Sharpe 1964 capital asset pricing model",
+          "Tobin 1958 liquidity preference risk"
+        ],
+        "1970_1990_derivatives": [
+          "Black Scholes 1973 option pricing",
+          "Merton 1973 theory rational option pricing",
+          "Cox Ingersoll Ross 1985 interest rate model",
+          "Heath Jarrow Morton 1992 forward rate volatilities"
+        ],
+        "1990_2010_microstructure": [
+          "Kyle 1985 continuous auctions informed trading",
+          "Glosten Milgrom 1985 bid ask spreads",
+          "Almgren Chriss 2000 optimal execution",
+          "Avellaneda Stoikov 2008 high frequency market making"
+        ],
+        "2010_2025_ml_era": [
+          "Lopez de Prado 2018 machine learning finance",
+          "temporal fusion transformer 2024",
+          "neural Hawkes process 2024",
+          "graph neural networks portfolio 2024",
+          "diffusion models time series 2025"
+        ]
+      },
+      "institutional_reverse_engineering": [
+        "\"{fund_name}\" patent algorithm site:uspto.gov",
+        "\"{fund_name}\" SEC filing 13F strategy inference",
+        "\"{fund_name}\" academic collaboration published",
+        "\"{founder_name}\" speech quantitative strategy",
+        "\"{fund_name}\" lawsuit disclosure proprietary method"
+      ],
+      "formula_validation": [
+        "\"{formula_name}\" institutional adoption billions AUM",
+        "\"{formula_name}\" backtest out of sample",
+        "\"{formula_name}\" replication study peer reviewed",
+        "\"{formula_name}\" production trading system",
+        "\"{formula_name}\" Nobel Prize citation"
+      ]
+    }
+  },
+
+  "output_requirements": {
+    "per_formula_deliverable": {
+      "required_fields": [
+        "formula_name",
+        "year_invented",
+        "inventors_affiliations",
+        "latex_mathematical_formula",
+        "python_implementation_production_grade",
+        "institutional_evidence_citations",
+        "academic_paper_citation_apa",
+        "expected_sharpe_improvement",
+        "expected_win_rate_improvement",
+        "implementation_complexity_score",
+        "validation_score"
+      ],
+      "evidence_requirements": {
+        "minimum_sources": 3,
+        "source_types": [
+          "peer_reviewed_journal_paper",
+          "institutional_fund_disclosure",
+          "sec_filing_or_patent",
+          "working_code_implementation",
+          "backtest_performance_data"
+        ]
+      }
+    }
+  },
+
+  "continuous_improvement": {
+    "feedback_loops": {
+      "backtest_validation": "Every formula must be backtested before production",
+      "out_of_sample_testing": "50% of data reserved for validation",
+      "walk_forward_optimization": "Rolling 12-month windows",
+      "live_trading_paper_trading": "2-week paper trading minimum before live"
+    },
+    "research_cadence": {
+      "daily": "arxiv new submissions (q-fin categories)",
+      "weekly": "SSRN new working papers",
+      "monthly": "Journal publications (tier-S/A journals)",
+      "quarterly": "Institutional strategy updates (13F filings)",
+      "annual": "Nobel Prize research, comprehensive review"
+    }
+  },
+
+  "mathematical_foundations": {
+    "description": "Core mathematical domains for quantitative finance research",
+    "domains": {
+      "stochastic_calculus": {
+        "topics": [
+          "Brownian motion and Wiener processes",
+          "Ito's lemma and stochastic differential equations",
+          "Girsanov theorem (measure changes)",
+          "Martingale theory",
+          "Feynman-Kac formula",
+          "Jump-diffusion processes (Levy processes)",
+          "Fractional Brownian motion (long memory)"
+        ],
+        "search_queries": [
+          "\"stochastic differential equation\" trading bitcoin cryptocurrency",
+          "\"Ito calculus\" volatility modeling high frequency",
+          "\"Levy process\" jump detection crypto markets",
+          "\"fractional Brownian motion\" long memory bitcoin",
+          "\"Girsanov theorem\" risk-neutral pricing digital assets",
+          "\"martingale\" asset pricing cryptocurrency"
+        ],
+        "applications": [
+          "Price process modeling",
+          "Volatility surface construction",
+          "Option pricing (Black-Scholes extensions)",
+          "Risk-neutral valuation",
+          "Jump risk modeling"
+        ]
+      },
+
+      "time_series_analysis": {
+        "topics": [
+          "ARIMA/SARIMA models",
+          "GARCH family (EGARCH, GJR-GARCH, FIGARCH)",
+          "VAR/VECM (vector autoregression, cointegration)",
+          "State-space models (Kalman filter)",
+          "Regime-switching models (Markov switching)",
+          "Long memory models (ARFIMA)",
+          "Spectral analysis (frequency domain)"
+        ],
+        "search_queries": [
+          "\"GARCH\" volatility forecasting cryptocurrency",
+          "\"Kalman filter\" bitcoin price prediction",
+          "\"regime switching\" markov bitcoin bear bull",
+          "\"cointegration\" VECM cryptocurrency pairs trading",
+          "\"ARFIMA\" long memory bitcoin returns",
+          "\"spectral analysis\" cyclical patterns crypto",
+          "\"VAR\" vector autoregression digital assets forecasting"
+        ],
+        "applications": [
+          "Volatility forecasting",
+          "Mean reversion detection",
+          "Regime identification (bull/bear/sideways)",
+          "Pairs trading (cointegration)",
+          "Cycle detection",
+          "Forecast generation"
+        ]
+      },
+
+      "signal_processing": {
+        "topics": [
+          "Fourier transforms (FFT, DFT)",
+          "Wavelet analysis (Daubechies, Morlet, Haar)",
+          "Hilbert-Huang transform (empirical mode decomposition)",
+          "Kalman filtering and variants (EKF, UKF)",
+          "Wiener filtering (optimal noise reduction)",
+          "Adaptive filters (LMS, RLS)",
+          "Singular spectrum analysis (SSA)"
+        ],
+        "search_queries": [
+          "\"wavelet\" bitcoin price decomposition multi-resolution",
+          "\"Fourier transform\" cryptocurrency cyclical patterns",
+          "\"empirical mode decomposition\" bitcoin trend",
+          "\"Kalman filter\" bitcoin optimal estimation",
+          "\"singular spectrum analysis\" crypto denoising",
+          "\"Hilbert transform\" instantaneous frequency bitcoin"
+        ],
+        "applications": [
+          "Noise reduction in price signals",
+          "Multi-scale decomposition (trend/cycle/noise separation)",
+          "Dominant cycle detection",
+          "Signal extraction from high-frequency data",
+          "Adaptive trend following"
+        ]
+      },
+
+      "information_theory": {
+        "topics": [
+          "Shannon entropy (information content)",
+          "Mutual information (dependency detection)",
+          "Transfer entropy (causal information flow)",
+          "Relative entropy (Kullback-Leibler divergence)",
+          "Maximum entropy principle",
+          "Information bottleneck theory",
+          "Algorithmic information theory (Kolmogorov complexity)"
+        ],
+        "search_queries": [
+          "\"transfer entropy\" bitcoin causal relationships",
+          "\"mutual information\" cryptocurrency correlation",
+          "\"Shannon entropy\" market uncertainty bitcoin",
+          "\"Kullback-Leibler\" distribution change detection crypto",
+          "\"maximum entropy\" portfolio construction",
+          "\"Kolmogorov complexity\" bitcoin randomness"
+        ],
+        "applications": [
+          "Feature selection (remove redundant signals)",
+          "Causal discovery (what drives what)",
+          "Regime change detection (distribution shifts)",
+          "Portfolio construction (max entropy approach)",
+          "Market efficiency testing"
+        ]
+      },
+
+      "graph_theory_network_analysis": {
+        "topics": [
+          "Correlation networks",
+          "Minimum spanning trees (MST)",
+          "Network centrality (betweenness, eigenvector)",
+          "Community detection (Louvain, spectral clustering)",
+          "Temporal networks (dynamic graphs)",
+          "Signed networks (positive/negative correlations)",
+          "Contagion models (financial spillovers)"
+        ],
+        "search_queries": [
+          "\"correlation network\" cryptocurrency market structure",
+          "\"minimum spanning tree\" bitcoin altcoin relationships",
+          "\"network centrality\" systemic risk crypto",
+          "\"community detection\" cryptocurrency clusters",
+          "\"graph neural network\" financial time series",
+          "\"contagion\" spillover effects cryptocurrency markets"
+        ],
+        "applications": [
+          "Portfolio diversification (cluster-based)",
+          "Systemic risk identification",
+          "Lead-lag relationships",
+          "Market regime identification",
+          "Pair selection for trading"
+        ]
+      },
+
+      "optimization_theory": {
+        "topics": [
+          "Convex optimization (portfolio construction)",
+          "Stochastic optimization (dynamic programming)",
+          "Multi-objective optimization (Pareto efficiency)",
+          "Robust optimization (worst-case scenarios)",
+          "Integer programming (discrete choices)",
+          "Genetic algorithms (evolutionary optimization)",
+          "Bayesian optimization (hyperparameter tuning)"
+        ],
+        "search_queries": [
+          "\"convex optimization\" portfolio bitcoin constraints",
+          "\"dynamic programming\" optimal trading execution",
+          "\"robust optimization\" worst case portfolio crypto",
+          "\"Bayesian optimization\" hyperparameter ML trading",
+          "\"multi-objective\" portfolio risk return bitcoin",
+          "\"genetic algorithm\" trading strategy optimization"
+        ],
+        "applications": [
+          "Portfolio weight optimization",
+          "Execution optimization (minimize slippage)",
+          "Strategy parameter tuning",
+          "Risk budgeting",
+          "Feature selection in ML models"
+        ]
+      },
+
+      "machine_learning_theory": {
+        "topics": [
+          "Statistical learning theory (VC dimension, PAC learning)",
+          "Kernel methods (SVM, Gaussian processes)",
+          "Ensemble methods (bagging, boosting, stacking)",
+          "Deep learning architectures (LSTM, Transformer, GNN)",
+          "Reinforcement learning (Q-learning, DQN, PPO, A3C)",
+          "Bayesian machine learning (probabilistic models)",
+          "Meta-learning (learning to learn)",
+          "Causal inference (do-calculus, instrumental variables)"
+        ],
+        "search_queries": [
+          "\"transformer\" attention mechanism bitcoin price prediction",
+          "\"reinforcement learning\" optimal trading policy crypto",
+          "\"Gaussian process\" volatility forecasting uncertainty",
+          "\"graph neural network\" cryptocurrency price prediction",
+          "\"XGBoost\" gradient boosting bitcoin trading",
+          "\"temporal fusion transformer\" multivariate forecasting crypto",
+          "\"causal inference\" bitcoin price drivers"
+        ],
+        "applications": [
+          "Price prediction (regression)",
+          "Direction classification (long/short/neutral)",
+          "Optimal execution (RL agents)",
+          "Feature importance (SHAP, LIME)",
+          "Uncertainty quantification (Bayesian methods)",
+          "Multi-asset forecasting (Transformers)"
+        ]
+      },
+
+      "microstructure_theory": {
+        "topics": [
+          "Order book dynamics (limit order book modeling)",
+          "Price impact models (Kyle, Almgren-Chriss)",
+          "Bid-ask spread decomposition",
+          "Market making models (Avellaneda-Stoikov)",
+          "Trade classification (Lee-Ready algorithm)",
+          "High-frequency data econometrics",
+          "Queue position modeling"
+        ],
+        "search_queries": [
+          "\"limit order book\" bitcoin modeling depth",
+          "\"Almgren Chriss\" optimal execution cryptocurrency",
+          "\"Avellaneda Stoikov\" market making crypto",
+          "\"price impact\" model bitcoin large orders",
+          "\"bid ask spread\" cryptocurrency microstructure",
+          "\"order flow\" toxicity bitcoin trading",
+          "\"queue position\" limit order priority crypto"
+        ],
+        "applications": [
+          "Optimal trade execution (minimize slippage)",
+          "Market making strategies",
+          "Liquidity measurement",
+          "Short-term price prediction (microstructure signals)",
+          "Transaction cost analysis"
+        ]
+      },
+
+      "alternative_mathematics": {
+        "topics": [
+          "Chaos theory and nonlinear dynamics",
+          "Fractal geometry (Hurst exponent, multifractals)",
+          "Differential geometry (manifold learning)",
+          "Topological data analysis (persistent homology)",
+          "Quantum computing for finance",
+          "Compressed sensing (sparse signal recovery)",
+          "Tensor decomposition (multi-way analysis)"
+        ],
+        "search_queries": [
+          "\"Hurst exponent\" bitcoin long memory persistence",
+          "\"chaos theory\" cryptocurrency nonlinear prediction",
+          "\"topological data analysis\" financial time series",
+          "\"manifold learning\" bitcoin price structure",
+          "\"quantum computing\" portfolio optimization",
+          "\"multifractal\" bitcoin volatility clustering",
+          "\"compressed sensing\" high frequency data sparse"
+        ],
+        "applications": [
+          "Long-term memory detection",
+          "Nonlinear pattern recognition",
+          "High-dimensional data reduction",
+          "Anomaly detection",
+          "Regime persistence measurement"
+        ]
+      }
+    }
+  },
+
+  "data_infrastructure": {
+    "description": "Comprehensive data sources for quantitative research",
+    "categories": {
+      "market_microstructure_data": {
+        "bitcoin_specific": [
+          "Order book snapshots (Level 2/3 data)",
+          "Trade-by-trade data (tick data)",
+          "Funding rates (perpetual futures)",
+          "Open interest (derivatives)",
+          "Liquidation data",
+          "Whale alert transactions",
+          "Exchange inflows/outflows"
+        ],
+        "sources": [
+          "CryptoCompare API",
+          "Binance historical data",
+          "Coinbase Pro API",
+          "Kraken API",
+          "TradingView data",
+          "CoinMetrics",
+          "Glassnode"
+        ],
+        "search_queries": [
+          "bitcoin order book dataset download",
+          "cryptocurrency tick data historical",
+          "bitcoin funding rate data API",
+          "crypto liquidation data source"
+        ]
+      },
+
+      "on_chain_data": {
+        "metrics": [
+          "UTXO age distribution",
+          "Active addresses",
+          "Transaction volume",
+          "Mining difficulty",
+          "Hash rate",
+          "MVRV ratio (Market Value to Realized Value)",
+          "SOPR (Spent Output Profit Ratio)",
+          "Exchange reserves",
+          "Whale wallet movements"
+        ],
+        "sources": [
+          "Glassnode Studio",
+          "CoinMetrics",
+          "IntoTheBlock",
+          "Santiment",
+          "CryptoQuant",
+          "Blockchain.com API",
+          "LookIntoBitcoin"
+        ],
+        "search_queries": [
+          "\"MVRV ratio\" bitcoin prediction model",
+          "\"SOPR\" bitcoin profitability on-chain",
+          "\"UTXO\" age distribution bitcoin signal",
+          "on-chain metrics bitcoin trading strategy"
+        ]
+      },
+
+      "sentiment_nlp_data": {
+        "sources": [
+          "Twitter/X API (crypto influencers, sentiment)",
+          "Reddit (r/bitcoin, r/cryptocurrency)",
+          "Telegram channels",
+          "Discord servers",
+          "News aggregators (CryptoPanic, CoinDesk)",
+          "Google Trends (search volume)",
+          "Fear and Greed Index",
+          "LunarCrush social metrics"
+        ],
+        "nlp_techniques": [
+          "BERT/FinBERT sentiment analysis",
+          "GPT-based news summarization",
+          "Topic modeling (LDA, NMF)",
+          "Named entity recognition (NER)",
+          "Event extraction",
+          "Sentiment scoring (VADER, TextBlob)"
+        ],
+        "search_queries": [
+          "\"FinBERT\" cryptocurrency sentiment analysis",
+          "\"BERT\" bitcoin news classification",
+          "\"LDA topic modeling\" crypto twitter",
+          "\"sentiment analysis\" bitcoin price prediction NLP"
+        ]
+      },
+
+      "macroeconomic_data": {
+        "indicators": [
+          "Federal Reserve policy (interest rates, QE)",
+          "DXY (US Dollar Index)",
+          "Gold prices",
+          "S&P 500 correlation",
+          "VIX (volatility index)",
+          "Treasury yields (10Y, 2Y)",
+          "Inflation metrics (CPI, PCE)",
+          "M2 money supply"
+        ],
+        "sources": [
+          "FRED (Federal Reserve Economic Data)",
+          "Bloomberg Terminal",
+          "Yahoo Finance API",
+          "Alpha Vantage",
+          "World Bank data",
+          "IMF data"
+        ],
+        "search_queries": [
+          "bitcoin correlation S&P500 DXY gold",
+          "\"federal reserve\" policy bitcoin impact",
+          "\"VIX\" bitcoin volatility relationship",
+          "macro indicators bitcoin regression model"
+        ]
+      },
+
+      "derivatives_data": {
+        "metrics": [
+          "Options implied volatility (IV)",
+          "Options skew",
+          "Put/call ratio",
+          "Futures basis (contango/backwardation)",
+          "Perpetual funding rates",
+          "Open interest by strike",
+          "Max pain theory"
+        ],
+        "sources": [
+          "Deribit (options data)",
+          "CME Bitcoin futures",
+          "Binance futures",
+          "Bybit",
+          "Skew.com",
+          "Laevitas"
+        ],
+        "search_queries": [
+          "bitcoin options implied volatility trading",
+          "\"put call ratio\" bitcoin sentiment",
+          "\"futures basis\" bitcoin arbitrage",
+          "perpetual funding rate bitcoin strategy"
+        ]
+      },
+
+      "alternative_data": {
+        "unconventional_sources": [
+          "GitHub commits (blockchain development activity)",
+          "Google search trends (retail interest)",
+          "Wikipedia page views (attention proxy)",
+          "Lightning Network capacity (adoption metric)",
+          "Stablecoin supply (USDT, USDC minting)",
+          "Miner reserves (capitulation signals)",
+          "Exchange API traffic",
+          "Job postings (blockchain developer demand)"
+        ],
+        "search_queries": [
+          "\"alternative data\" cryptocurrency prediction",
+          "\"GitHub commits\" bitcoin development price",
+          "\"Google Trends\" bitcoin search volume signal",
+          "\"stablecoin supply\" bitcoin liquidity"
+        ]
+      }
+    }
+  },
+
+  "alpha_discovery_workflow": {
+    "description": "Systematic protocol for discovering and validating trading edges",
+    "phases": {
+      "phase_1_hypothesis_generation": {
+        "step_1": "Literature review (execute parallel searches across all tier-0/1/2 sources)",
+        "step_2": "Institutional reverse engineering (analyze 13F, patents, academic papers from RenTech, Two Sigma, etc.)",
+        "step_3": "Mathematical brainstorming (apply stochastic calculus, information theory, signal processing to bitcoin)",
+        "step_4": "Alternative data exploration (on-chain, sentiment, derivatives)",
+        "output": "Ranked list of hypotheses with institutional evidence scores"
+      },
+
+      "phase_2_mathematical_formalization": {
+        "step_1": "Express hypothesis in LaTeX mathematical notation",
+        "step_2": "Derive closed-form solution (if possible) or numerical approximation",
+        "step_3": "Identify required data inputs and transformations",
+        "step_4": "Specify hyperparameters and optimization space",
+        "output": "Production-ready mathematical specification"
+      },
+
+      "phase_3_implementation": {
+        "step_1": "Implement in Python (NumPy/Pandas/SciPy)",
+        "step_2": "Vectorize for speed (use Numba, Cython if needed)",
+        "step_3": "Unit test edge cases",
+        "step_4": "Benchmark computational performance",
+        "output": "Production-grade Python module ready for Hostinger deployment"
+      },
+
+      "phase_4_validation": {
+        "step_1": "Backtest on historical bitcoin data (full history)",
+        "step_2": "Walk-forward analysis (expanding/rolling windows)",
+        "step_3": "Out-of-sample testing (reserve 20% of data)",
+        "step_4": "Monte Carlo simulation (robustness testing)",
+        "step_5": "Regime analysis (bull/bear/sideways performance)",
+        "output": "Validated strategy with Sharpe ratio, max drawdown, win rate"
+      },
+
+      "phase_5_production_readiness": {
+        "step_1": "Package for Hostinger deployment",
+        "step_2": "Real-time data integration",
+        "step_3": "Risk management layer (position sizing, stop-loss)",
+        "step_4": "Execution layer (order placement, fill handling)",
+        "step_5": "Monitoring and alerting",
+        "output": "Live-trading ready strategy on Hostinger"
+      }
+    },
+
+    "quality_gates": {
+      "gate_1_institutional_validation": {
+        "requirement": "At least 1 tier-1 fund uses similar technique OR cited 500+ times",
+        "action_if_fail": "Deprioritize or return to hypothesis generation"
+      },
+      "gate_2_mathematical_rigor": {
+        "requirement": "Mathematically sound derivation, no curve-fitting",
+        "action_if_fail": "Reformulate or reject"
+      },
+      "gate_3_backtest_performance": {
+        "requirement": "Sharpe > 1.5, Max DD < 25%, Win rate > 50%",
+        "action_if_fail": "Parameter optimization or reject"
+      },
+      "gate_4_robustness": {
+        "requirement": "Performs across multiple market regimes",
+        "action_if_fail": "Add regime filter or reject"
+      }
+    }
+  },
+
+  "risk_management_framework": {
+    "description": "Professional-grade risk controls for billion-dollar hedge fund operations",
+    "layers": {
+      "portfolio_level": {
+        "max_drawdown_limit": "15%",
+        "var_95": "Value at Risk (95% confidence) <= 5% of portfolio per day",
+        "expected_shortfall": "CVaR (Conditional VaR) monitoring",
+        "correlation_limits": "Max 0.7 correlation between strategies",
+        "concentration_limits": "No single strategy > 20% of capital"
+      },
+
+      "strategy_level": {
+        "kelly_criterion": "Use fractional Kelly (0.25x to 0.5x Kelly)",
+        "position_sizing": "Volatility-adjusted (inverse vol weighting)",
+        "leverage_limits": "Max 3x leverage per strategy",
+        "stop_loss": "Dynamic stops based on ATR (Average True Range)",
+        "profit_targets": "Take profits at 2x risk (1:2 risk-reward minimum)"
+      },
+
+      "execution_level": {
+        "slippage_limits": "Kill order if slippage > 0.5%",
+        "market_impact": "Never exceed 1% of daily volume",
+        "order_types": "Prefer limit orders over market orders",
+        "time_limits": "Cancel unfilled orders after 60 seconds",
+        "exchange_distribution": "Diversify across 3+ exchanges"
+      },
+
+      "monitoring": {
+        "real_time_pnl": "Track P&L tick-by-tick",
+        "drawdown_alerts": "Alert if DD exceeds 10%",
+        "correlation_breakdown": "Alert if strategy correlations spike",
+        "execution_quality": "Monitor fill rates, slippage, latency",
+        "system_health": "Server uptime, API connectivity, data freshness"
+      }
+    }
+  },
+
+  "research_execution_protocol": {
+    "description": "How to use this config with Claude Code Pro (200k context)",
+    "workflow": {
+      "step_1_load_config": {
+        "action": "Claude Code reads this entire research_config.json at session start",
+        "context_usage": "~30k tokens for config loading"
+      },
+
+      "step_2_parallel_research": {
+        "action": "Launch parallel WebSearch/WebFetch queries across all tiers",
+        "max_concurrent": 20,
+        "example_queries": [
+          "Search tier-0 academic sources (arXiv, SSRN, NBER) for stochastic calculus bitcoin",
+          "Search tier-1 institutional (RenTech patents, AQR papers) for hidden markov models",
+          "Search tier-2 systematic managers (Man AHL, Bridgewater) for trend following",
+          "Search tier-3 academic (MIT, Princeton, Chicago) for market microstructure",
+          "Search tier-4 regulatory (SEC 13F, USPTO) for algorithmic trading patents",
+          "Search tier-5 implementation (QuantLib, GitHub) for Kalman filter bitcoin"
+        ],
+        "context_usage": "~100k tokens for search results"
+      },
+
+      "step_3_synthesis": {
+        "action": "Analyze all search results, extract formulas, rank by validation score",
+        "output_format": "JSON array of alpha strategies with LaTeX formulas, Python implementations, evidence citations",
+        "context_usage": "~50k tokens for synthesis and output"
+      },
+
+      "step_4_export_to_hostinger": {
+        "action": "Generate Python modules ready for deployment",
+        "format": "Modular code (data ingestion, signal generation, execution, risk management)",
+        "testing": "Include unit tests and backtesting harness",
+        "documentation": "Docstrings with mathematical derivations"
+      }
+    },
+
+    "optimization_tips": {
+      "use_200k_context": "Load entire research history in one session (all papers, formulas, implementations)",
+      "batch_queries": "Run 10-20 searches in parallel, aggregate results",
+      "structured_output": "Always output JSON for easy parsing and deployment",
+      "version_control": "Track research sessions, save outputs to .claude/research_outputs/"
+    }
+  },
+
+  "output_schema": {
+    "description": "Standardized JSON format for discovered alpha strategies",
+    "schema": {
+      "strategy_id": "string (UUID)",
+      "strategy_name": "string",
+      "mathematical_class": "enum (time_series, signal_processing, ml, microstructure, etc.)",
+      "formula_latex": "string (LaTeX notation)",
+      "formula_intuition": "string (plain English explanation)",
+      "python_implementation": "string (production code)",
+      "data_requirements": "array of data sources",
+      "hyperparameters": "object (param: default_value)",
+      "institutional_evidence": {
+        "tier_1_funds": "array of fund names using technique",
+        "academic_citations": "array of paper citations (APA format)",
+        "patents": "array of USPTO patent numbers",
+        "sec_filings": "array of 13F filing evidence"
+      },
+      "validation_scores": {
+        "institutional_score": "float (0-1)",
+        "academic_score": "float (0-1)",
+        "backtest_score": "float (0-1)",
+        "overall_score": "float (0-1)"
+      },
+      "expected_performance": {
+        "sharpe_ratio": "float",
+        "annual_return": "float",
+        "max_drawdown": "float",
+        "win_rate": "float"
+      },
+      "implementation_complexity": "enum (low, medium, high)",
+      "priority": "enum (must_implement, high, medium, low, research_only)"
+    }
+  },
+
+  "renaissance_technologies_playbook": {
+    "description": "Reverse-engineered strategies from Renaissance Technologies Medallion Fund",
+    "core_principles": {
+      "signal_diversification": "Combine 1000+ uncorrelated micro-signals, each with tiny edge (51% vs 49%)",
+      "high_frequency_execution": "Hold periods: seconds to days, NOT months",
+      "statistical_arbitrage": "Exploit mean reversion in pricing inefficiencies",
+      "massive_data_collection": "Every tick, every instrument, every market, going back decades",
+      "pure_mathematics": "No fundamental analysis, no macro views - only math and statistics",
+      "high_turnover": "30-100x annual turnover (trading in/out constantly)",
+      "leverage": "Modest leverage (2-3x) on highly diversified portfolio = low risk"
+    },
+
+    "known_techniques": {
+      "hidden_markov_models": {
+        "description": "Regime detection - identify bull/bear/sideways states",
+        "applications": [
+          "Volatility regime switching (low vol -> high vol transition)",
+          "Market microstructure regimes (liquid vs illiquid)",
+          "Price momentum regimes (trending vs mean-reverting)"
+        ],
+        "search_queries": [
+          "\"hidden markov model\" bitcoin regime detection",
+          "\"HMM\" volatility regime switching cryptocurrency",
+          "\"Baum-Welch algorithm\" financial time series",
+          "\"Viterbi algorithm\" state sequence bitcoin",
+          "renaissance technologies hidden markov patent"
+        ],
+        "math_foundation": "Baum-Welch EM algorithm, Viterbi decoding",
+        "python_libraries": ["hmmlearn", "pomegranate"],
+        "institutional_evidence": "RenTech patent US7222080B2 (statistical arbitrage using state detection)"
+      },
+
+      "kernel_methods": {
+        "description": "Nonlinear pattern recognition in high-dimensional space",
+        "applications": [
+          "Support Vector Machines for direction classification",
+          "Gaussian Process regression for volatility forecasting",
+          "Kernel PCA for dimensionality reduction",
+          "Kernel ridge regression for nonlinear price prediction"
+        ],
+        "search_queries": [
+          "\"kernel methods\" financial time series prediction",
+          "\"support vector machine\" bitcoin trading",
+          "\"Gaussian process\" volatility forecasting crypto",
+          "\"kernel trick\" high dimensional finance",
+          "renaissance technologies kernel pattern recognition"
+        ],
+        "math_foundation": "Reproducing Kernel Hilbert Spaces (RKHS), Mercer's theorem",
+        "python_libraries": ["scikit-learn (SVM, KernelRidge)", "GPy", "GPflow"],
+        "institutional_evidence": "RenTech hired top machine learning researchers (Yann LeCun consulted)"
+      },
+
+      "signal_processing_wavelets": {
+        "description": "Multi-scale decomposition to separate noise from signal",
+        "applications": [
+          "Wavelet decomposition (separate trend/cycle/noise in bitcoin prices)",
+          "Dominant cycle detection (identify market cycles)",
+          "Denoising high-frequency data (remove microstructure noise)",
+          "Multi-resolution analysis (trade different timeframes)"
+        ],
+        "search_queries": [
+          "\"wavelet analysis\" bitcoin price decomposition",
+          "\"Daubechies wavelet\" financial time series",
+          "\"discrete wavelet transform\" cryptocurrency trading",
+          "\"Morlet wavelet\" dominant cycle bitcoin",
+          "renaissance technologies signal processing wavelet"
+        ],
+        "math_foundation": "Discrete Wavelet Transform (DWT), Continuous Wavelet Transform (CWT)",
+        "python_libraries": ["PyWavelets", "scipy.signal"],
+        "institutional_evidence": "James Simons background in signal processing at IDA (code-breaking)"
+      },
+
+      "cointegration_pairs_trading": {
+        "description": "Exploit mean-reverting relationships between correlated assets",
+        "applications": [
+          "Bitcoin vs Ethereum cointegration",
+          "Spot vs futures basis trading",
+          "Cross-exchange arbitrage (Binance BTC vs Coinbase BTC)",
+          "Altcoin pairs (correlation-based)"
+        ],
+        "search_queries": [
+          "\"cointegration\" cryptocurrency pairs trading",
+          "\"Johansen test\" bitcoin altcoin",
+          "\"Engle-Granger\" cointegration bitcoin ethereum",
+          "\"error correction model\" cryptocurrency arbitrage",
+          "renaissance technologies statistical arbitrage pairs"
+        ],
+        "math_foundation": "Engle-Granger test, Johansen test, Vector Error Correction Model (VECM)",
+        "python_libraries": ["statsmodels.tsa.stattools (coint, vecm)", "arch"],
+        "institutional_evidence": "RenTech core strategy is stat arb (pairs trading at scale)"
+      },
+
+      "natural_language_processing": {
+        "description": "Extract trading signals from news, social media, filings",
+        "applications": [
+          "News sentiment analysis (CoinDesk, Bloomberg crypto)",
+          "Twitter sentiment (crypto influencers)",
+          "Reddit sentiment (r/bitcoin, r/cryptocurrency)",
+          "Regulatory announcements (SEC, CFTC sentiment)",
+          "Event extraction (exchange hacks, regulations, adoptions)"
+        ],
+        "search_queries": [
+          "\"NLP\" bitcoin price prediction sentiment",
+          "\"BERT\" financial news classification crypto",
+          "\"named entity recognition\" cryptocurrency events",
+          "\"topic modeling\" bitcoin reddit twitter",
+          "renaissance technologies natural language processing patents"
+        ],
+        "math_foundation": "TF-IDF, word embeddings (Word2Vec, GloVe), Transformers (BERT, GPT)",
+        "python_libraries": ["transformers (Hugging Face)", "spaCy", "NLTK", "FinBERT"],
+        "institutional_evidence": "RenTech heavily invested in NLP research, hired computational linguists"
+      },
+
+      "short_term_mean_reversion": {
+        "description": "Exploit microstructure-driven reversals (1min - 1day)",
+        "applications": [
+          "Bid-ask bounce (price bounces between bid/ask)",
+          "Order imbalance reversion (large buy -> short-term overreaction -> revert)",
+          "Intraday momentum reversal (morning pump -> afternoon dump)",
+          "Overnight gap reversion (gap up/down -> close the gap)"
+        ],
+        "search_queries": [
+          "\"short term mean reversion\" bitcoin high frequency",
+          "\"bid ask bounce\" cryptocurrency microstructure",
+          "\"order imbalance\" bitcoin reversal trading",
+          "\"intraday momentum\" reversal bitcoin",
+          "renaissance technologies high frequency mean reversion"
+        ],
+        "math_foundation": "OU process (Ornstein-Uhlenbeck), half-life estimation, z-score normalization",
+        "python_libraries": ["NumPy", "Pandas", "statsmodels"],
+        "institutional_evidence": "Medallion Fund holds positions for ~1-2 days on average (short-term focus)"
+      },
+
+      "order_flow_toxicity": {
+        "description": "Detect informed trading (whales) and trade with/against them",
+        "applications": [
+          "VPIN (Volume-Synchronized Probability of Informed Trading)",
+          "Order flow imbalance (aggressive buys vs sells)",
+          "Trade size distribution analysis (whale detection)",
+          "Quote stuffing detection (fake liquidity)"
+        ],
+        "search_queries": [
+          "\"VPIN\" bitcoin informed trading",
+          "\"order flow toxicity\" cryptocurrency",
+          "\"volume imbalance\" bitcoin whale detection",
+          "\"informed trading\" bitcoin microstructure",
+          "renaissance technologies order flow patent"
+        ],
+        "math_foundation": "VPIN formula, Kyle's lambda (price impact), trade classification (Lee-Ready)",
+        "python_libraries": ["custom implementation required"],
+        "institutional_evidence": "RenTech focuses on microstructure, likely uses order flow signals"
+      },
+
+      "machine_learning_ensembles": {
+        "description": "Combine hundreds of weak learners for robust predictions",
+        "applications": [
+          "Random Forest (1000+ trees for direction classification)",
+          "Gradient Boosting (XGBoost, LightGBM for price prediction)",
+          "Stacking (meta-learner combines multiple models)",
+          "Bagging (reduce variance in predictions)"
+        ],
+        "search_queries": [
+          "\"random forest\" bitcoin price prediction ensemble",
+          "\"XGBoost\" cryptocurrency trading machine learning",
+          "\"stacking\" ensemble bitcoin forecasting",
+          "\"gradient boosting\" bitcoin direction classification",
+          "renaissance technologies machine learning ensemble"
+        ],
+        "math_foundation": "Bootstrap aggregating, boosting theory, bias-variance tradeoff",
+        "python_libraries": ["XGBoost", "LightGBM", "CatBoost", "scikit-learn"],
+        "institutional_evidence": "RenTech employs 90+ PhDs in ML/AI/Stats (heavy ML usage)"
+      },
+
+      "volatility_forecasting": {
+        "description": "Predict future volatility for risk management and options trading",
+        "applications": [
+          "GARCH models (EGARCH, GJR-GARCH for bitcoin vol)",
+          "Realized volatility (5-min returns aggregated)",
+          "Implied volatility from options (Deribit)",
+          "HAR model (Heterogeneous AutoRegressive) for multi-scale vol"
+        ],
+        "search_queries": [
+          "\"GARCH\" bitcoin volatility forecasting",
+          "\"realized volatility\" cryptocurrency high frequency",
+          "\"HAR model\" bitcoin volatility",
+          "\"implied volatility\" bitcoin options forecasting",
+          "renaissance technologies volatility prediction"
+        ],
+        "math_foundation": "GARCH(1,1), EGARCH, realized variance, HAR-RV",
+        "python_libraries": ["arch", "statsmodels"],
+        "institutional_evidence": "Vol forecasting crucial for position sizing and risk management"
+      },
+
+      "kalman_filtering": {
+        "description": "Optimal state estimation from noisy observations",
+        "applications": [
+          "Estimate true price from noisy tick data",
+          "Dynamic beta estimation (time-varying market exposure)",
+          "Adaptive trend estimation (Kalman trend filter)",
+          "Spread estimation for pairs trading"
+        ],
+        "search_queries": [
+          "\"Kalman filter\" bitcoin state estimation",
+          "\"extended Kalman filter\" nonlinear bitcoin model",
+          "\"unscented Kalman filter\" volatility estimation crypto",
+          "\"Kalman trend\" bitcoin adaptive filtering",
+          "renaissance technologies Kalman filtering patent"
+        ],
+        "math_foundation": "Kalman recursion (predict-update), state-space models",
+        "python_libraries": ["filterpy", "pykalman", "statsmodels"],
+        "institutional_evidence": "Standard tool in quantitative finance, likely used by RenTech"
+      }
+    },
+
+    "research_priorities": {
+      "tier_S_must_implement": [
+        "Hidden Markov Models (regime detection)",
+        "Short-term mean reversion (microstructure)",
+        "Cointegration pairs trading",
+        "GARCH volatility forecasting",
+        "Kalman filtering (noise reduction)"
+      ],
+      "tier_A_high_priority": [
+        "Wavelet decomposition (multi-scale)",
+        "Kernel methods (SVM, Gaussian Process)",
+        "NLP sentiment analysis (Twitter, Reddit, news)",
+        "Order flow toxicity (VPIN, whale detection)",
+        "Machine learning ensembles (XGBoost, Random Forest)"
+      ],
+      "tier_B_medium_priority": [
+        "Transfer entropy (causal discovery)",
+        "Graph neural networks (correlation networks)",
+        "Reinforcement learning (optimal execution)",
+        "Topological data analysis",
+        "Fractal/multifractal analysis (Hurst exponent)"
+      ]
+    }
+  },
+
+  "automated_research_templates": {
+    "description": "Pre-built research queries for Claude Code to execute",
+    "templates": {
+      "comprehensive_renaissance_research": {
+        "goal": "Discover all publicly available RenTech techniques",
+        "parallel_queries": [
+          "renaissance technologies patent site:uspto.gov mathematical model",
+          "\"james simons\" lecture MIT mathematical models trading",
+          "\"robert mercer\" speech algorithm quantitative",
+          "\"peter brown\" renaissance technologies strategy",
+          "renaissance technologies SEC form ADV",
+          "\"the man who solved the market\" simons techniques",
+          "renaissance technologies academic papers published",
+          "site:arxiv.org renaissance technologies author"
+        ],
+        "synthesis_task": "Extract all mathematical techniques, formulas, and strategies mentioned. Output as JSON."
+      },
+
+      "stochastic_calculus_bitcoin": {
+        "goal": "Find all stochastic calculus applications to bitcoin trading",
+        "parallel_queries": [
+          "\"stochastic differential equation\" bitcoin price model",
+          "\"Ito calculus\" cryptocurrency volatility",
+          "\"jump diffusion\" bitcoin Levy process",
+          "\"Heston model\" bitcoin stochastic volatility",
+          "\"geometric Brownian motion\" bitcoin options pricing",
+          "\"Ornstein-Uhlenbeck\" bitcoin mean reversion",
+          "\"fractional Brownian motion\" bitcoin long memory"
+        ],
+        "synthesis_task": "For each technique: LaTeX formula, Python implementation, backtest results if available."
+      },
+
+      "machine_learning_crypto_2024": {
+        "goal": "Latest ML techniques for crypto trading (2024-2025)",
+        "parallel_queries": [
+          "\"transformer\" bitcoin price prediction 2024",
+          "\"temporal fusion transformer\" cryptocurrency 2024",
+          "\"graph neural network\" bitcoin 2025",
+          "\"reinforcement learning\" crypto trading 2024",
+          "\"deep learning\" bitcoin forecasting 2025 arxiv",
+          "\"neural Hawkes\" cryptocurrency order flow 2024",
+          "\"diffusion models\" financial time series 2025"
+        ],
+        "synthesis_task": "Rank by Sharpe ratio in published backtests. Include GitHub implementations."
+      },
+
+      "on_chain_metrics_alpha": {
+        "goal": "Discover all on-chain metrics with proven predictive power",
+        "parallel_queries": [
+          "\"MVRV ratio\" bitcoin price prediction backtest",
+          "\"SOPR\" bitcoin profitability on-chain alpha",
+          "\"UTXO age\" bitcoin trading signal",
+          "\"exchange reserves\" bitcoin price correlation",
+          "\"miner capitulation\" bitcoin bottom signal",
+          "\"whale transactions\" bitcoin price impact",
+          "on-chain metrics bitcoin Sharpe ratio backtest"
+        ],
+        "synthesis_task": "For each metric: formula, data source, backtest Sharpe, Python code."
+      },
+
+      "market_microstructure_bitcoin": {
+        "goal": "Microstructure strategies for bitcoin HFT",
+        "parallel_queries": [
+          "\"limit order book\" bitcoin modeling 2024",
+          "\"Almgren Chriss\" optimal execution bitcoin",
+          "\"Avellaneda Stoikov\" market making cryptocurrency",
+          "\"order flow imbalance\" bitcoin prediction",
+          "\"VPIN\" bitcoin informed trading",
+          "\"bid ask spread\" bitcoin arbitrage",
+          "\"queue position\" bitcoin limit order priority"
+        ],
+        "synthesis_task": "Focus on execution strategies. Include slippage models and optimal order placement."
+      },
+
+      "institutional_13f_reverse_engineering": {
+        "goal": "Reverse-engineer strategies from top quant funds' holdings",
+        "parallel_queries": [
+          "renaissance technologies 13F holdings bitcoin ETF",
+          "two sigma 13F cryptocurrency exposure",
+          "citadel 13F bitcoin futures CME",
+          "\"jane street\" bitcoin ETF market making",
+          "top quantitative hedge funds cryptocurrency positions",
+          "institutional bitcoin holdings 13F 2024"
+        ],
+        "synthesis_task": "Infer trading strategies from position changes. Detect statistical arbitrage patterns."
+      }
+    },
+
+    "execution_instructions": {
+      "how_to_use": [
+        "Step 1: Copy one of the 'parallel_queries' arrays",
+        "Step 2: In Claude Code, request: 'Execute these searches in parallel and synthesize results'",
+        "Step 3: Claude Code will use WebSearch tool to fetch all results concurrently",
+        "Step 4: Claude Code will analyze, extract formulas, and output structured JSON",
+        "Step 5: Save JSON output to .claude/research_outputs/ for deployment to Hostinger"
+      ],
+      "expected_output": "JSON file with 10-50 alpha strategies, each with LaTeX formula, Python code, validation scores",
+      "time_estimate": "5-10 minutes per template (parallel execution)",
+      "context_usage": "~150k tokens (fits in Claude Code Pro 200k limit)"
+    }
+  }
+}
