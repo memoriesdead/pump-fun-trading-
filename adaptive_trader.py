@@ -117,6 +117,19 @@ class AdaptiveVolatilityTrader:
             avg_interval = (self.timestamps[-1] - self.timestamps[0]) / (len(self.timestamps) - 1)
             expected_samples = self.tp_vol_multiple ** 2  # Variance scales with sqrt(t)
             expected_hold_secs = expected_samples * avg_interval
+
+            # MINIMUM HOLD TIME based on regime to prevent premature timeout
+            # In low volatility, price needs more time to move
+            if regime == 'low':
+                min_hold = 30.0  # At least 30 seconds in low vol
+            elif regime == 'medium':
+                min_hold = 15.0  # At least 15 seconds in medium vol
+            elif regime == 'high':
+                min_hold = 5.0   # At least 5 seconds in high vol
+            else:  # extreme
+                min_hold = 2.0   # At least 2 seconds in extreme vol
+
+            expected_hold_secs = max(expected_hold_secs, min_hold)
         else:
             expected_hold_secs = 60.0  # Default 1 minute
 
