@@ -1,39 +1,38 @@
 #!/usr/bin/env python3
 """
-EXPLOSIVE BLOCKCHAIN TRADING - 300,000+ Trades/Day
-===================================================
-Mathematically optimized for:
-- 50.75%+ WIN RATE (edge-optimized)
-- 300,000+ rapid trades per day
-- Maximum mathematical edge from academic formulas
+ADAPTIVE VOLATILITY-SCALED BLOCKCHAIN TRADING
+==============================================
+THE FUNDAMENTAL FIX: Parameters SCALE with current market volatility.
+
+Key Insight (Guillaume et al. 1997):
+- 1% move in 1 second = same significance as 1% move in 1 hour
+- Parameters should be volatility-relative, not time-fixed
+- In HIGH volatility: larger TP/SL in $, shorter hold time
+- In LOW volatility: smaller TP/SL in $, longer hold time
+- The RELATIVE edge stays constant because parameters scale!
+
+ADAPTIVE PARAMETERS:
+- TP = 2.0 × current realized volatility
+- SL = 1.5 × current realized volatility
+- Hold Time = f(volatility) using random walk theory: E[time] ~ (target/sigma)^2
+
+EDGE FORMULA (Volatility-Scaled):
+    EV = (Win_Rate × TP_mult) - (Loss_Rate × SL_mult)
+
+    With TP=2.0×vol and SL=1.5×vol:
+    Breakeven_WR = 1.5 / (1.5 + 2.0) = 42.86%
+
+    At 50% WR:  Edge = 0.50 × 2.0 - 0.50 × 1.5 = 0.25 vol units
+    At 55% WR:  Edge = 0.55 × 2.0 - 0.45 × 1.5 = 0.425 vol units
 
 Formula Edge Sources (IDs 520-560):
-- Kyle Lambda: Liquidity detection → trade when liquid
-- VPIN: Toxic flow avoidance → skip toxic periods
-- OFI: Order flow momentum → ride the flow
-- Microprice: Fair value → trade deviations
-- NVT/MVRV/SOPR: Valuation edge → contrarian signals
-- Hash Ribbon: Miner capitulation → accumulation zones
-- Kelly: Optimal sizing → maximize growth
-- HMM Regime: Trend filter → align with regime
-
-EDGE FORMULA (Asymmetric SL/TP):
-    EV = (Win_Rate × Take_Profit) - (Loss_Rate × Stop_Loss)
-
-    With SL=0.15%, TP=0.20% (RR=1.33:1):
-    Breakeven_WR = SL / (SL + TP) = 0.15 / 0.35 = 42.86%
-
-    At 50.75% WR:
-    EV = (0.5075 × 0.20%) - (0.4925 × 0.15%)
-       = 0.1015% - 0.0739%
-       = 0.0276% per trade
-
-    With 300K trades/day: 0.0276% × 300,000 = 8,280% theoretical
-    (Limited by position sizing, slippage, and capital constraints)
+- Kyle Lambda, VPIN, OFI, Microprice: Market microstructure
+- NVT, MVRV, SOPR, Hash Ribbon: On-chain valuation
+- Kelly, HMM Regime: Risk management
 
 Usage:
-    python test_explosive_trading.py 10        # $10 explosive test
-    python test_explosive_trading.py 10000000  # $10M explosive test
+    python test_explosive_trading.py 10        # $10 adaptive test
+    python test_explosive_trading.py 10000000  # $10M adaptive test
 """
 import sys
 import asyncio
@@ -48,6 +47,7 @@ sys.stdout = sys.stderr
 from blockchain.pipeline import BlockchainTradingPipeline, PipelineSignal
 from blockchain.blockchain_feed import BlockchainFeed
 from blockchain.real_price_feed import CoinbasePriceFeed  # REAL PRICE - NO MOCK DATA
+from adaptive_trader import AdaptiveVolatilityTrader, AdaptiveParameters  # VOLATILITY-SCALED PARAMS
 
 
 @dataclass
@@ -77,9 +77,9 @@ class ExplosiveTrader:
     def __init__(
         self,
         initial_capital: float = 10_000_000.0,
-        # EXPLOSIVE PARAMETERS - TIGHT
-        stop_loss_pct: float = 0.0015,      # 0.15% SL (tight)
-        take_profit_pct: float = 0.002,      # 0.20% TP (slightly better RR)
+        # ADAPTIVE PARAMETERS - Scale with volatility
+        tp_vol_multiple: float = 2.0,        # TP at 2x current volatility
+        sl_vol_multiple: float = 1.5,        # SL at 1.5x current volatility
         min_confidence: float = 0.15,        # Low threshold = more trades
         # Edge optimization
         min_edge_threshold: float = 0.005,   # 0.5% minimum edge
@@ -87,11 +87,18 @@ class ExplosiveTrader:
     ):
         self.capital = initial_capital
         self.initial_capital = initial_capital
-        self.stop_loss_pct = stop_loss_pct
-        self.take_profit_pct = take_profit_pct
         self.min_confidence = min_confidence
         self.min_edge_threshold = min_edge_threshold
         self.target_win_rate = target_win_rate
+
+        # ADAPTIVE VOLATILITY TRADER - scales TP/SL with market conditions
+        self.adaptive_trader = AdaptiveVolatilityTrader(
+            tp_vol_multiple=tp_vol_multiple,
+            sl_vol_multiple=sl_vol_multiple,
+            vol_lookback=100,
+            min_vol_pct=0.0001,  # 0.01% floor
+        )
+        self.current_params: AdaptiveParameters = None
 
         # Initialize pipeline with TRUE price
         self.pipeline = BlockchainTradingPipeline(
@@ -135,23 +142,25 @@ class ExplosiveTrader:
 
     def get_optimal_size(self, signal: PipelineSignal) -> float:
         """
-        Calculate optimal position size using Kelly Criterion.
+        Calculate optimal position size using Kelly Criterion with ADAPTIVE TP/SL.
 
         Kelly Formula (asymmetric payoffs): f* = (p × b - q) / b
         Where:
             p = win probability
-            b = win/loss ratio = TP / SL
+            b = win/loss ratio = TP / SL (NOW ADAPTIVE!)
             q = 1 - p
 
-        For SL=0.15%, TP=0.20%: b = 0.20/0.15 = 1.333
+        With adaptive TP=2.0*vol and SL=1.5*vol: b = 2.0/1.5 = 1.333
+        Breakeven WR = 1.5 / (1.5 + 2.0) = 42.86%
         At 50.75% WR: f* = (0.5075 × 1.333 - 0.4925) / 1.333 = 0.139 = 13.9%
         """
         # Get live win rate or use target
         p = (self.wins / self.trades) if self.trades > 10 else self.target_win_rate
         q = 1 - p
 
-        # Win/loss ratio (odds) from SL/TP
-        b = self.take_profit_pct / self.stop_loss_pct  # 0.20/0.15 = 1.333
+        # Win/loss ratio from ADAPTIVE TP/SL multiples
+        # TP = 2.0 * vol, SL = 1.5 * vol => ratio = 2.0/1.5 = 1.333 (constant!)
+        b = self.adaptive_trader.tp_vol_multiple / self.adaptive_trader.sl_vol_multiple
 
         # Full Kelly formula
         kelly_full = (p * b - q) / b if b > 0 else 0
@@ -209,12 +218,27 @@ class ExplosiveTrader:
 
     def process_signal(self, signal: PipelineSignal, timestamp: float) -> str:
         """
-        Process pipeline signal with explosive trading logic.
+        Process pipeline signal with ADAPTIVE volatility-scaled trading logic.
+
+        KEY CHANGE: TP/SL and hold time now scale with current volatility.
+        In LOW vol: smaller TP/SL in $, longer hold time
+        In HIGH vol: larger TP/SL in $, shorter hold time
+        The RELATIVE edge stays constant!
 
         Returns: Action taken
         """
         action = 'HOLD'
         btc_price = signal.exchange_price if signal.exchange_price > 0 else signal.true_price
+
+        # UPDATE ADAPTIVE TRADER with current price (critical for volatility calculation)
+        self.adaptive_trader.update(btc_price, timestamp)
+
+        # GET ADAPTIVE PARAMETERS - scaled to current volatility
+        if self.in_position:
+            params = self.current_params  # Use params from entry
+        else:
+            params = self.adaptive_trader.get_adaptive_parameters(btc_price, 'LONG')
+            self.current_params = params
 
         if self.in_position:
             # Calculate current PnL
@@ -224,22 +248,23 @@ class ExplosiveTrader:
                 pnl_pct = (self.entry_price - btc_price) / self.entry_price
 
             current_pnl = self.position_size * pnl_pct
-            duration_ms = (timestamp - self.entry_time) * 1000
+            duration_secs = timestamp - self.entry_time
 
-            # EXPLOSIVE EXIT CONDITIONS (tight)
+            # ADAPTIVE EXIT CONDITIONS (volatility-scaled)
 
-            # 1. Stop loss
-            if pnl_pct <= -self.stop_loss_pct:
+            # 1. Stop loss - ADAPTIVE (params.stop_loss scales with volatility)
+            if pnl_pct <= -params.stop_loss:
                 self._close_position(current_pnl, 'SL', btc_price, timestamp, win=False)
                 action = 'EXIT_SL'
 
-            # 2. Take profit
-            elif pnl_pct >= self.take_profit_pct:
+            # 2. Take profit - ADAPTIVE (params.take_profit scales with volatility)
+            elif pnl_pct >= params.take_profit:
                 self._close_position(current_pnl, 'TP', btc_price, timestamp, win=True)
                 action = 'EXIT_TP'
 
-            # 3. Time-based exit (max 0.5 seconds in position for 300K+ trades)
-            elif duration_ms > 500:
+            # 3. Time-based exit - ADAPTIVE (expected_hold_secs from random walk theory)
+            # Use 2x expected hold as max to allow for normal variation
+            elif duration_secs > params.expected_hold_secs * 2:
                 win = pnl_pct > 0
                 reason = 'TIME_WIN' if win else 'TIME_LOSS'
                 self._close_position(current_pnl, reason, btc_price, timestamp, win=win)
@@ -257,8 +282,10 @@ class ExplosiveTrader:
                 action = 'FLIP_SHORT'
 
         else:
-            # EXPLOSIVE ENTRY CONDITIONS (aggressive)
+            # ENTRY CONDITIONS (use fresh adaptive params)
             if self.should_enter(signal):
+                pos_type = 'LONG' if signal.signal == 1 else 'SHORT'
+                self.current_params = self.adaptive_trader.get_adaptive_parameters(btc_price, pos_type)
                 if signal.signal == 1:
                     self._open_position('LONG', btc_price, signal, timestamp)
                     action = 'ENTRY_LONG'
@@ -333,23 +360,28 @@ class ExplosiveTrader:
     @property
     def edge(self) -> float:
         """
-        Current edge percentage using correct asymmetric SL/TP formula.
+        Current edge in VOLATILITY UNITS using adaptive SL/TP.
 
-        Formula: Edge = WR × TP - (1-WR) × SL
+        Formula: Edge = WR × TP_mult - (1-WR) × SL_mult
 
-        Breakeven WR = SL / (SL + TP) = 0.0015 / 0.0035 = 42.86%
+        With TP=2.0*vol and SL=1.5*vol:
+        Breakeven WR = 1.5 / (1.5 + 2.0) = 42.86%
+
+        At 50% WR: Edge = 0.50 * 2.0 - 0.50 * 1.5 = 0.25 vol units
+        At 55% WR: Edge = 0.55 * 2.0 - 0.45 * 1.5 = 0.425 vol units
         """
         if self.trades < 10:
             return 0.0
 
         wr = self.wins / self.trades
 
-        # Correct edge with asymmetric SL/TP
-        # EV per trade = WR × TP - (1-WR) × SL
-        ev_per_trade = (wr * self.take_profit_pct) - ((1 - wr) * self.stop_loss_pct)
+        # Edge in volatility units (constant regardless of actual vol!)
+        tp_mult = self.adaptive_trader.tp_vol_multiple  # 2.0
+        sl_mult = self.adaptive_trader.sl_vol_multiple  # 1.5
+        ev_vol_units = (wr * tp_mult) - ((1 - wr) * sl_mult)
 
-        # Return as percentage
-        return ev_per_trade * 100
+        # Return as percentage of volatility
+        return ev_vol_units * 100
 
     @property
     def trades_per_day(self) -> float:
@@ -375,25 +407,31 @@ async def main():
     capital = float(sys.argv[1]) if len(sys.argv) > 1 else 10_000_000.0
 
     print("=" * 80, flush=True)
-    print("EXPLOSIVE BLOCKCHAIN TRADING - 300K+ Trades/Day", flush=True)
+    print("ADAPTIVE VOLATILITY-SCALED BLOCKCHAIN TRADING", flush=True)
     print("=" * 80, flush=True)
     print(flush=True)
-    print("EDGE OPTIMIZATION:", flush=True)
-    print("  - Target Win Rate: 50.75%+", flush=True)
-    print("  - Target Trades/Day: 300,000+", flush=True)
-    print("  - SL/TP: 0.15% / 0.20% (tight for rapid cycling)", flush=True)
-    print("  - Max Position Time: 0.5 seconds (ultra-fast cycling)", flush=True)
+    print("KEY INSIGHT (Guillaume et al. 1997):", flush=True)
+    print("  Parameters SCALE with current market volatility.", flush=True)
+    print("  In LOW vol: smaller TP/SL in $, longer hold time", flush=True)
+    print("  In HIGH vol: larger TP/SL in $, shorter hold time", flush=True)
+    print("  The RELATIVE edge stays constant!", flush=True)
+    print(flush=True)
+    print("ADAPTIVE PARAMETERS:", flush=True)
+    print("  - TP = 2.0 × current volatility", flush=True)
+    print("  - SL = 1.5 × current volatility", flush=True)
+    print("  - Hold Time = f(volatility) via random walk theory", flush=True)
+    print("  - Breakeven WR = 42.86% (we target 50.75%+)", flush=True)
     print(flush=True)
     print("FORMULAS (IDs 520-560):", flush=True)
     print("  Kyle Lambda | VPIN | OFI | Microprice | NVT | MVRV | SOPR", flush=True)
     print("  Hash Ribbon | Almgren-Chriss | Avellaneda-Stoikov | Kelly | HMM", flush=True)
     print("=" * 80, flush=True)
 
-    # Initialize explosive trader
+    # Initialize ADAPTIVE trader
     trader = ExplosiveTrader(
         initial_capital=capital,
-        stop_loss_pct=0.0015,     # 0.15%
-        take_profit_pct=0.002,    # 0.20%
+        tp_vol_multiple=2.0,      # TP at 2x volatility
+        sl_vol_multiple=1.5,      # SL at 1.5x volatility
         min_confidence=0.15,
         target_win_rate=0.5075,
     )
@@ -491,6 +529,18 @@ async def main():
 
                 # Detailed stats every 10 seconds
                 if int(elapsed) % 10 == 0 and elapsed > 5:
+                    # Show adaptive parameters
+                    params = trader.current_params
+                    vol_info = ""
+                    if params:
+                        vol_info = (
+                            f"Vol: {params.current_volatility*100:.4f}% ({params.vol_regime}) | "
+                            f"TP: {params.take_profit*100:.4f}% | SL: {params.stop_loss*100:.4f}% | "
+                            f"Hold: {params.expected_hold_secs:.1f}s"
+                        )
+                    else:
+                        vol_info = "Vol: warming up..."
+                    print(f"    ADAPTIVE: {vol_info}", flush=True)
                     print(
                         f"    Regime: {signal.regime.upper()} | "
                         f"Conf: {signal.confidence:.2f} | "
