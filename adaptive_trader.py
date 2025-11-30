@@ -37,10 +37,16 @@ class AdaptiveVolatilityTrader:
     - In LOW volatility: TP/SL are smaller (in price), hold time longer
     - The RELATIVE size (in volatility units) stays constant
 
+    CRITICAL FOR LIVE TRADING:
+    - TP/SL MUST be larger than trading costs (fees + spread + slippage)
+    - Typical round-trip cost: 0.15-0.30% (fees ~0.10% x2, slippage ~0.05%)
+    - If TP < trading costs, EVERY trade loses money regardless of win rate!
+
     The edge comes from:
     - Signal predicts direction with >50% accuracy
     - TP > SL gives favorable risk/reward
     - Volatility scaling ensures parameters always match market conditions
+    - Fee-aware minimums ensure profitability in live trading
     """
 
     def __init__(
@@ -49,11 +55,24 @@ class AdaptiveVolatilityTrader:
         sl_vol_multiple: float = 1.5,   # SL at 1.5x current volatility
         vol_lookback: int = 100,        # Samples for volatility estimation
         min_vol_pct: float = 0.0001,    # Minimum 0.01% volatility floor
+        # LIVE TRADING: Fee/cost parameters
+        round_trip_fee_pct: float = 0.002,  # 0.20% round trip (entry + exit fees)
+        slippage_pct: float = 0.0005,       # 0.05% slippage estimate
     ):
         self.tp_vol_multiple = tp_vol_multiple
         self.sl_vol_multiple = sl_vol_multiple
         self.vol_lookback = vol_lookback
         self.min_vol_pct = min_vol_pct
+
+        # LIVE TRADING: Cost accounting
+        self.round_trip_fee_pct = round_trip_fee_pct  # 0.20% default
+        self.slippage_pct = slippage_pct              # 0.05% default
+        self.total_cost_pct = round_trip_fee_pct + slippage_pct  # 0.25% total
+
+        # MINIMUM TP must cover costs + profit margin
+        # TP needs to be at least 2x costs to have 50% breakeven after costs
+        self.min_tp_pct = self.total_cost_pct * 2  # 0.50% minimum TP
+        self.min_sl_pct = self.total_cost_pct * 1.5  # 0.375% minimum SL
 
         self.prices = deque(maxlen=vol_lookback)
         self.timestamps = deque(maxlen=vol_lookback)
@@ -103,6 +122,11 @@ class AdaptiveVolatilityTrader:
         tp_pct = vol * self.tp_vol_multiple
         sl_pct = vol * self.sl_vol_multiple
 
+        # CRITICAL FOR LIVE TRADING: Enforce minimums that cover trading costs
+        # If volatility-based TP/SL is smaller than costs, you LOSE on every trade!
+        tp_pct = max(tp_pct, self.min_tp_pct)  # At least 0.50% TP
+        sl_pct = max(sl_pct, self.min_sl_pct)  # At least 0.375% SL
+
         # Convert to price levels based on position type
         if position_type == 'LONG':
             tp_price = current_price * (1 + tp_pct)
@@ -118,16 +142,17 @@ class AdaptiveVolatilityTrader:
             expected_samples = self.tp_vol_multiple ** 2  # Variance scales with sqrt(t)
             expected_hold_secs = expected_samples * avg_interval
 
-            # MINIMUM HOLD TIME based on regime to prevent premature timeout
-            # In low volatility, price needs more time to move
+            # MINIMUM HOLD TIME based on regime AND trading costs
+            # With min TP of 0.50%, need more time for price to move that much
+            # In low volatility, price needs MUCH more time to move 0.50%
             if regime == 'low':
-                min_hold = 30.0  # At least 30 seconds in low vol
+                min_hold = 300.0  # 5 minutes in low vol (0.01% vol needs time for 0.50% move)
             elif regime == 'medium':
-                min_hold = 15.0  # At least 15 seconds in medium vol
+                min_hold = 120.0  # 2 minutes in medium vol
             elif regime == 'high':
-                min_hold = 5.0   # At least 5 seconds in high vol
+                min_hold = 60.0   # 1 minute in high vol
             else:  # extreme
-                min_hold = 2.0   # At least 2 seconds in extreme vol
+                min_hold = 30.0   # 30 seconds in extreme vol
 
             expected_hold_secs = max(expected_hold_secs, min_hold)
         else:
@@ -165,18 +190,34 @@ class AdaptiveVolatilityTrader:
 
         return False, '', False
 
-    def get_breakeven_winrate(self) -> float:
+    def get_breakeven_winrate(self, include_fees: bool = True) -> float:
         """
         Calculate breakeven win rate for current TP/SL ratio.
 
-        Formula: BE_WR = SL / (SL + TP)
+        Formula WITHOUT fees: BE_WR = SL / (SL + TP)
+        Formula WITH fees: BE_WR = (SL + cost) / (SL + TP)
 
+        Without fees (theoretical):
         With TP=2*vol and SL=1.5*vol:
         BE_WR = 1.5 / (1.5 + 2.0) = 1.5 / 3.5 = 42.86%
 
-        So we only need >42.86% accuracy to be profitable!
+        With fees (REAL trading):
+        Using min TP=0.50%, min SL=0.375%, cost=0.25%:
+        Actual win: 0.50% - 0.25% = 0.25% profit
+        Actual loss: 0.375% + 0.25% = 0.625% loss
+        BE_WR = 0.625 / (0.625 + 0.25) = 71.4%
+
+        REALITY: Need >71% win rate to be profitable with fees!
         """
-        return self.sl_vol_multiple / (self.sl_vol_multiple + self.tp_vol_multiple)
+        if include_fees:
+            # Use minimum TP/SL since those are what we actually trade with
+            actual_tp = self.min_tp_pct - self.total_cost_pct  # Net profit per win
+            actual_sl = self.min_sl_pct + self.total_cost_pct  # Net loss per loss
+            if actual_tp <= 0:
+                return 1.0  # Impossible to profit if TP doesn't cover costs
+            return actual_sl / (actual_sl + actual_tp)
+        else:
+            return self.sl_vol_multiple / (self.sl_vol_multiple + self.tp_vol_multiple)
 
     def get_expected_edge(self, win_rate: float) -> float:
         """
@@ -198,9 +239,18 @@ if __name__ == '__main__':
     print('ADAPTIVE VOLATILITY-SCALED TRADING SYSTEM')
     print('=' * 60)
 
-    print(f'\nBreakeven win rate: {trader.get_breakeven_winrate()*100:.2f}%')
-    print(f'Edge at 55% WR: {trader.get_expected_edge(0.55):.3f} vol units')
-    print(f'Edge at 52% WR: {trader.get_expected_edge(0.52):.3f} vol units')
+    print(f'\n*** TRADING COST PARAMETERS ***')
+    print(f'  Round-trip fees: {trader.round_trip_fee_pct*100:.2f}%')
+    print(f'  Slippage:        {trader.slippage_pct*100:.2f}%')
+    print(f'  Total cost:      {trader.total_cost_pct*100:.2f}%')
+    print(f'\n  Minimum TP:      {trader.min_tp_pct*100:.2f}% (must cover costs)')
+    print(f'  Minimum SL:      {trader.min_sl_pct*100:.3f}%')
+
+    print(f'\n*** BREAKEVEN WIN RATES ***')
+    print(f'  Without fees (theoretical): {trader.get_breakeven_winrate(include_fees=False)*100:.2f}%')
+    print(f'  WITH FEES (REAL):          {trader.get_breakeven_winrate(include_fees=True)*100:.2f}%')
+    print(f'\n  Edge at 75% WR: {trader.get_expected_edge(0.75):.3f} vol units')
+    print(f'  Edge at 80% WR: {trader.get_expected_edge(0.80):.3f} vol units')
 
     # Simulate LOW volatility (stable market like now)
     base = 91000
