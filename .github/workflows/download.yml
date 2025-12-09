@@ -1,0 +1,51 @@
+name: Parallel PumpFun Download
+
+on:
+  workflow_dispatch:
+    inputs:
+      start_day:
+        description: 'Start day number (0-281)'
+        required: true
+        default: '0'
+      batch_size:
+        description: 'Days per batch'
+        required: true
+        default: '20'
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        offset: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Calculate day
+        id: calc
+        run: |
+          DAY=$(( ${{ github.event.inputs.start_day }} + ${{ matrix.offset }} ))
+          echo "day=$DAY" >> $GITHUB_OUTPUT
+
+      - name: Download day ${{ matrix.offset }}
+        run: python github_day_downloader.py ${{ steps.calc.outputs.day }}
+        continue-on-error: true
+
+      - name: Upload data
+        uses: actions/upload-artifact@v4
+        with:
+          name: pumpfun-day-${{ steps.calc.outputs.day }}
+          path: data/*.jsonl.gz
+          if-no-files-found: ignore
+          retention-days: 90
