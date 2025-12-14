@@ -1,341 +1,686 @@
 #!/usr/bin/env python3
 """
-Trading System Runner
-=====================
+RENTECH UNIFIED TRADING ENGINE
+==============================
 
-Safe entry point for the trading system with pre-flight checks.
+"Every token on pump.fun is an opportunity."
+
+Single entry point for all modes:
+- collect: Capture all data (run on VPS 24/7)
+- paper: Paper trading with real data
+- live: Real money execution (not implemented yet)
+
+Architecture:
+    ┌─────────────────────────────────────────────────────────────────┐
+    │                    UNIFIED ENGINE                                │
+    ├─────────────────────────────────────────────────────────────────┤
+    │                                                                  │
+    │   PumpPortal WebSocket                                          │
+    │          │                                                       │
+    │          ├──→ Data Lake (every trade stored)                    │
+    │          │                                                       │
+    │          ├──→ Wallet Tracker (smart money detection)            │
+    │          │                                                       │
+    │          ├──→ Opportunity Scanner (edge calculation)            │
+    │          │                                                       │
+    │          └──→ Executor (paper or live)                          │
+    │                                                                  │
+    └─────────────────────────────────────────────────────────────────┘
 
 Usage:
-    # Paper trading (safe, no real money)
-    python -m trading.run --mode paper --capital 100
+    # Mode 1: Collect data only (run on VPS 24/7)
+    python trading/run.py --mode collect
 
-    # Dry run (real executor, but no actual transactions)
-    python -m trading.run --mode real --keypair ~/.config/solana/trading.json --dry-run
+    # Mode 2: Paper trading
+    python trading/run.py --mode paper --capital 100 --duration 3600
 
-    # Real trading (LIVE MONEY - requires confirmation)
-    python -m trading.run --mode real --keypair ~/.config/solana/trading.json --confirm-real
-
-RenTech Principle: Paper and Real use IDENTICAL logic.
-The ONLY difference is the executor.
+    # Mode 3: Live trading (requires setup)
+    python trading/run.py --mode live --capital 100
 """
 
 import asyncio
-import argparse
 import json
-import logging
+import time
 import sys
+import signal
+import logging
 from pathlib import Path
-from datetime import datetime
+from dataclasses import dataclass
+from typing import Dict, Optional
 
-# Configure logging
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# Platform-specific event loop policy
+if sys.platform == 'win32':
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s | %(levelname)s | %(message)s',
+    format='%(asctime)s | %(message)s',
     datefmt='%H:%M:%S'
 )
 logger = logging.getLogger(__name__)
 
 
 # =============================================================================
-# PRE-FLIGHT CHECKS
+# CONSTANTS
 # =============================================================================
 
-def check_python_version():
-    """Ensure Python 3.9+"""
-    if sys.version_info < (3, 9):
-        logger.error(f"Python 3.9+ required, got {sys.version}")
-        return False
-    return True
+PUMPPORTAL_WS = "wss://pumpportal.fun/api/data"
+STATS_INTERVAL = 60  # Log stats every minute
+TOP_TOKENS_REFRESH = 300  # Refresh top tokens every 5 minutes
+MAX_TOP_TOKENS = 100  # Subscribe to top 100 volume tokens
 
 
-def check_dependencies():
-    """Check required packages are installed"""
-    required = [
-        'aiohttp',
-        'numpy',
-    ]
-    missing = []
+# =============================================================================
+# UNIFIED ENGINE
+# =============================================================================
 
-    for pkg in required:
+class UnifiedEngine:
+    """
+    RenTech-style unified trading engine.
+
+    Combines:
+    - Universal data collector
+    - Smart wallet tracker
+    - Opportunity scanner
+    - Paper/live executor
+
+    All in one seamless flow.
+    """
+
+    def __init__(
+        self,
+        mode: str = "paper",
+        capital: float = 100.0,
+        min_edge: float = 0.55,
+        max_positions: int = 5,
+        target_pct: float = 0.10,
+        stop_pct: float = 0.10,
+        max_hold_secs: int = 300
+    ):
+        self.mode = mode
+        self.capital = capital
+
+        # Import components
+        from data.lake import get_lake
+        from data.wallet_tracker import WalletTracker
+        from trading.edge_calculator import EdgeCalculator, ExitCalculator
+        from trading.opportunity_scanner import OpportunityScanner
+        from trading.executor import PaperExecutor
+
+        # Initialize components
+        self.lake = get_lake()
+        self.wallet_tracker = WalletTracker()
+        self.edge_calc = EdgeCalculator(wallet_tracker=self.wallet_tracker)
+        self.exit_calc = ExitCalculator(
+            target_pct=target_pct,
+            stop_pct=stop_pct,
+            max_hold_secs=max_hold_secs
+        )
+        self.scanner = OpportunityScanner(
+            edge_calculator=self.edge_calc,
+            exit_calculator=self.exit_calc,
+            min_edge=min_edge,
+            max_positions=max_positions
+        )
+
+        # Choose executor based on mode
+        if mode == "live":
+            from trading.rentech_executor import RentechExecutor
+
+            # Load config
+            config_path = Path(__file__).parent.parent / ".wallet" / "config.json"
+            wallet_path = Path(__file__).parent.parent / ".wallet" / "keypair.json"
+
+            if not wallet_path.exists():
+                raise ValueError("No wallet found. Run wallet setup first.")
+
+            if config_path.exists():
+                with open(config_path) as f:
+                    config = json.load(f)
+                rpc_url = config.get('rpc_url', '')
+            else:
+                raise ValueError("No config found at .wallet/config.json")
+
+            if "YOUR_HELIUS_API_KEY" in rpc_url:
+                raise ValueError("Please update .wallet/config.json with your Helius API key")
+
+            # RenTech executor: tracks REAL P&L from wallet balance
+            # Higher target, tighter stop to overcome fees
+            self.executor = RentechExecutor(
+                wallet_path=str(wallet_path),
+                rpc_url=rpc_url,
+                capital=capital,
+                target_pct=0.15,    # Higher target to overcome ~5% costs
+                stop_pct=0.08,      # Tighter stop to limit damage
+                max_hold_secs=max_hold_secs,
+                slippage_bps=200,   # Tighter slippage (2%)
+            )
+            self._needs_init = True
+        else:
+            self.executor = PaperExecutor(
+                capital=capital,
+                target_pct=target_pct,
+                stop_pct=stop_pct,
+                max_hold_secs=max_hold_secs
+            )
+            self._needs_init = False
+
+        # WebSocket state
+        self._ws = None
+        self._running = False
+        self.subscribed = set()
+
+        # Top volume tokens (RenTech style: highest volume first)
+        self.top_tokens = []  # List of (address, volume) tuples sorted by volume
+        self.top_token_volumes = {}  # address -> volume for priority sorting
+        self._last_top_token_refresh = 0
+
+        # Statistics
+        self.trades_seen = 0
+        self.tokens_seen = 0
+        self.start_time = time.time()
+
+    async def fetch_top_tokens(self):
+        """
+        Fetch top tokens by volume - RenTech style.
+
+        Highest volume = most opportunity.
+        """
         try:
-            __import__(pkg)
-        except ImportError:
-            missing.append(pkg)
+            from data.top_tokens import TopTokenFetcher
 
-    if missing:
-        logger.error(f"Missing packages: {', '.join(missing)}")
-        logger.error("Install with: pip install " + ' '.join(missing))
-        return False
-    return True
+            logger.info("Fetching top volume tokens (RenTech style)...")
 
+            fetcher = TopTokenFetcher()
 
-def check_keypair(keypair_path: str) -> bool:
-    """Verify keypair file exists and is valid"""
-    path = Path(keypair_path).expanduser()
+            # Fetch from DexScreener (free, no API key needed)
+            all_tokens = []
 
-    if not path.exists():
-        logger.error(f"Keypair file not found: {path}")
-        return False
+            # 1. Boosted tokens (high attention)
+            boosted = await fetcher.fetch_dexscreener_boosted()
+            all_tokens.extend(boosted)
 
-    try:
-        with open(path) as f:
-            data = json.load(f)
-            if not isinstance(data, list) or len(data) != 64:
-                logger.error("Invalid keypair format (expected 64-byte array)")
-                return False
-    except json.JSONDecodeError:
-        logger.error("Keypair file is not valid JSON")
-        return False
-    except Exception as e:
-        logger.error(f"Could not read keypair: {e}")
-        return False
+            # 2. Search for popular Solana tokens
+            searched = await fetcher.fetch_dexscreener_search([
+                "pump", "fun", "SOL", "BONK", "WIF", "POPCAT", "MEW",
+                "SLERF", "MYRO", "FARTCOIN", "GOAT", "PNUT", "MOODENG",
+                "AI16Z", "GRIFFAIN", "ZEREBRO", "meme", "degen", "moon"
+            ])
+            all_tokens.extend(searched)
 
-    logger.info(f"Keypair valid: {path}")
-    return True
+            # Deduplicate and sort by volume
+            seen = set()
+            unique_tokens = []
+            for t in all_tokens:
+                if t.address and t.address not in seen:
+                    seen.add(t.address)
+                    unique_tokens.append(t)
 
+            # Sort by volume + liquidity (highest first)
+            unique_tokens.sort(key=lambda x: (x.volume_24h + x.liquidity), reverse=True)
 
-def check_rpc_connection(rpc_url: str) -> bool:
-    """Test RPC endpoint connectivity"""
-    import asyncio
-    import aiohttp
+            # Take top N
+            self.top_tokens = [(t.address, t.volume_24h + t.liquidity) for t in unique_tokens[:MAX_TOP_TOKENS]]
+            self.top_token_volumes = {addr: vol for addr, vol in self.top_tokens}
 
-    async def test_rpc():
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    rpc_url,
-                    json={"jsonrpc": "2.0", "id": 1, "method": "getHealth"},
-                    timeout=aiohttp.ClientTimeout(total=10)
-                ) as resp:
-                    data = await resp.json()
-                    if 'result' in data and data['result'] == 'ok':
-                        return True
-                    # Some RPCs return different format
-                    if resp.status == 200:
-                        return True
+            logger.info(f"Loaded {len(self.top_tokens)} top volume tokens")
+
+            # Log top 5
+            for i, (addr, vol) in enumerate(self.top_tokens[:5], 1):
+                t = next((x for x in unique_tokens if x.address == addr), None)
+                if t:
+                    logger.info(f"  {i}. {t.symbol}: ${vol:,.0f} volume+liq")
+
+            self._last_top_token_refresh = time.time()
+
         except Exception as e:
-            logger.error(f"RPC connection failed: {e}")
-            return False
-        return False
+            logger.warning(f"Error fetching top tokens: {e}")
+            # Load from cache if available
+            try:
+                from data.top_tokens import TopTokenFetcher
+                cache_path = Path(__file__).parent.parent / "data" / "top_tokens.json"
+                if cache_path.exists():
+                    tokens = TopTokenFetcher.load(str(cache_path))
+                    self.top_tokens = [(t.address, t.volume_24h + t.liquidity) for t in tokens[:MAX_TOP_TOKENS]]
+                    self.top_token_volumes = {addr: vol for addr, vol in self.top_tokens}
+                    logger.info(f"Loaded {len(self.top_tokens)} tokens from cache")
+            except Exception as e2:
+                logger.warning(f"Cache load failed: {e2}")
 
-    return asyncio.run(test_rpc())
+    async def subscribe_top_tokens(self):
+        """Subscribe to top volume tokens."""
+        if not self._ws or not self.top_tokens:
+            return
 
+        # Get addresses to subscribe (not already subscribed)
+        to_subscribe = [addr for addr, _ in self.top_tokens if addr not in self.subscribed]
 
-def check_websocket_connection() -> bool:
-    """Test PumpPortal WebSocket connectivity"""
-    import asyncio
-    import aiohttp
+        if not to_subscribe:
+            return
 
-    async def test_ws():
+        # Subscribe in batches of 50
+        for i in range(0, len(to_subscribe), 50):
+            batch = to_subscribe[i:i+50]
+            try:
+                await self._ws.send_json({
+                    "method": "subscribeTokenTrade",
+                    "keys": batch
+                })
+                self.subscribed.update(batch)
+                logger.info(f"Subscribed to {len(batch)} top volume tokens (batch {i//50 + 1})")
+            except Exception as e:
+                logger.warning(f"Subscribe batch error: {e}")
+
+            await asyncio.sleep(0.5)  # Rate limit
+
+    async def run(self, duration: int = 0):
+        """
+        Main run loop.
+
+        Args:
+            duration: Seconds to run (0 = forever)
+        """
+        self._running = True
+        self._print_header()
+
+        # Initialize RenTech executor (get wallet balance)
+        if self._needs_init:
+            await self.executor.initialize()
+
+        # RENTECH: Fetch top volume tokens BEFORE connecting
+        await self.fetch_top_tokens()
+
+        end_time = time.time() + duration if duration > 0 else float('inf')
+
+        try:
+            import aiohttp
+        except ImportError:
+            logger.error("aiohttp required: pip install aiohttp")
+            return
+
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.ws_connect(
-                    "wss://pumpportal.fun/api/data",
-                    timeout=aiohttp.ClientTimeout(total=10)
+                    PUMPPORTAL_WS,
+                    heartbeat=30,
+                    receive_timeout=60
                 ) as ws:
-                    # Try to subscribe
+                    self._ws = ws
+                    logger.info("Connected to PumpPortal")
+
+                    # Subscribe to new token firehose (catch new opportunities)
                     await ws.send_json({"method": "subscribeNewToken"})
-                    # Wait for any response
-                    msg = await asyncio.wait_for(ws.receive(), timeout=5)
-                    return msg.type == aiohttp.WSMsgType.TEXT
-        except asyncio.TimeoutError:
-            # Timeout is OK - connection worked
-            return True
+                    logger.info("Subscribed to new token firehose")
+
+                    # RENTECH: Subscribe to TOP VOLUME tokens (where the money is)
+                    await self.subscribe_top_tokens()
+                    logger.info(f"Subscribed to {len(self.top_tokens)} high-volume tokens")
+
+                    # Start stats logger
+                    stats_task = asyncio.create_task(self._stats_loop())
+
+                    # Start top token refresh task
+                    refresh_task = asyncio.create_task(self._top_token_refresh_loop())
+
+                    try:
+                        async for msg in ws:
+                            if not self._running:
+                                break
+
+                            if time.time() > end_time:
+                                break
+
+                            if msg.type == aiohttp.WSMsgType.TEXT:
+                                await self._process_message(msg.data)
+
+                    finally:
+                        stats_task.cancel()
+                        refresh_task.cancel()
+                        try:
+                            await stats_task
+                        except asyncio.CancelledError:
+                            pass
+                        try:
+                            await refresh_task
+                        except asyncio.CancelledError:
+                            pass
+
         except Exception as e:
-            logger.error(f"WebSocket connection failed: {e}")
-            return False
+            logger.error(f"Engine error: {e}")
 
-    return asyncio.run(test_ws())
+        finally:
+            self._print_results()
 
+    async def _process_message(self, data: str):
+        """Process WebSocket message."""
+        try:
+            msg = json.loads(data)
+        except:
+            return
 
-def display_capital_warning(capital: float, mode: str):
-    """Display capital at risk warning for real mode"""
-    if mode != 'real':
-        return
+        if not isinstance(msg, dict):
+            return
 
-    print("\n" + "=" * 60)
-    print("  *** REAL MONEY WARNING ***")
-    print("=" * 60)
-    print(f"\n  Mode:     REAL (LIVE TRANSACTIONS)")
-    print(f"  Capital:  {capital} SOL at risk")
-    print(f"\n  This will execute REAL trades on Solana mainnet.")
-    print("  Losses are possible and irreversible.")
-    print("\n" + "=" * 60)
+        tx_type = msg.get('txType', '')
 
+        # New token created
+        if tx_type == 'create':
+            await self._on_new_token(msg)
 
-def confirm_real_trading() -> bool:
-    """Require explicit confirmation for real trading"""
-    print("\n  Type 'I ACCEPT THE RISK' to proceed: ", end='')
-    try:
-        response = input().strip()
-        return response == 'I ACCEPT THE RISK'
-    except EOFError:
-        return False
+        # Trade event
+        elif tx_type in ('buy', 'sell'):
+            await self._on_trade(msg)
+
+    async def _on_new_token(self, msg: dict):
+        """Handle new token creation."""
+        mint = msg.get('mint', '')
+        if not mint or mint in self.subscribed:
+            return
+
+        # Rotate subscriptions at limit
+        if len(self.subscribed) >= 500:
+            oldest = next(iter(self.subscribed))
+            self.subscribed.discard(oldest)
+
+        try:
+            await self._ws.send_json({
+                "method": "subscribeTokenTrade",
+                "keys": [mint]
+            })
+            self.subscribed.add(mint)
+            self.tokens_seen += 1
+
+            # Store token
+            self.lake.upsert_token({
+                'mint': mint,
+                'symbol': msg.get('symbol', ''),
+                'name': msg.get('name', ''),
+                'creator': msg.get('traderPublicKey', ''),
+                'created_at': time.time()
+            })
+
+        except Exception as e:
+            logger.warning(f"Subscribe error: {e}")
+
+    async def _on_trade(self, msg: dict):
+        """Handle trade event."""
+        # Parse trade
+        try:
+            sol_amount = float(msg.get('solAmount', 0)) / 1e9
+            token_amount = float(msg.get('tokenAmount', 0))
+
+            if token_amount <= 0:
+                return
+
+            price = sol_amount / token_amount
+            mint = msg.get('mint', '')
+            trader = msg.get('traderPublicKey', '')
+            side = msg.get('txType', 'buy')
+
+            trade = {
+                'timestamp': float(msg.get('timestamp', 0)) or time.time() * 1000,
+                'mint': mint,
+                'signature': msg.get('signature', ''),
+                'trader': trader,
+                'side': side,
+                'sol_amount': sol_amount,
+                'token_amount': token_amount,
+                'price_sol': price,
+                'market_cap_sol': float(msg.get('marketCapSol', 0)),
+                'slot': int(msg.get('slot', 0)),
+                'symbol': msg.get('symbol', mint[:8])
+            }
+
+        except Exception:
+            return
+
+        self.trades_seen += 1
+
+        # Store trade (collect mode or always)
+        if self.mode in ('collect', 'paper', 'live'):
+            self.lake.ingest_trade(trade)
+
+        # Skip trading logic if collect-only mode
+        if self.mode == 'collect':
+            return
+
+        # Update wallet tracker
+        self.wallet_tracker.update_from_trade(trade)
+
+        # Update scanner state
+        self.scanner.update_token(mint, trade)
+
+        # Check exit conditions for open positions
+        if mint in self.executor.positions:
+            exit_reason = self.executor.check_exit_conditions(mint, price)
+            if exit_reason:
+                await self.executor.exit(mint, price, exit_reason)
+
+        # Check for new entry opportunities
+        elif len(self.executor.positions) < self.scanner.max_positions:
+            opportunities = self.scanner.scan()
+
+            # RENTECH: Prioritize by volume (highest volume = most liquidity = best execution)
+            if opportunities and self.top_token_volumes:
+                # Sort by: volume * edge (high volume + high edge = best opportunity)
+                opportunities.sort(
+                    key=lambda o: self.top_token_volumes.get(o.mint, 0) * o.edge,
+                    reverse=True
+                )
+
+            for opp in opportunities[:1]:  # Enter best opportunity
+                if opp.mint == mint:  # Only enter on fresh trade
+                    # Log if it's a high-volume token
+                    volume = self.top_token_volumes.get(mint, 0)
+                    if volume > 0:
+                        logger.info(f"HIGH VOLUME: {opp.symbol} (${volume:,.0f} vol+liq)")
+                    await self.executor.enter(opp, price)
+
+    async def _stats_loop(self):
+        """Log statistics periodically."""
+        while self._running:
+            await asyncio.sleep(STATS_INTERVAL)
+            self._log_stats()
+
+    async def _top_token_refresh_loop(self):
+        """Periodically refresh top volume tokens."""
+        while self._running:
+            await asyncio.sleep(TOP_TOKENS_REFRESH)
+            try:
+                await self.fetch_top_tokens()
+                await self.subscribe_top_tokens()
+            except Exception as e:
+                logger.warning(f"Top token refresh error: {e}")
+
+    def _log_stats(self):
+        """Log current statistics."""
+        elapsed = (time.time() - self.start_time) / 60
+        stats = self.executor.get_stats()
+
+        if self.mode == 'collect':
+            lake_stats = self.lake.stats()
+            logger.info(
+                f"[{elapsed:.1f}m] "
+                f"Trades: {self.trades_seen:,} | "
+                f"Tokens: {self.tokens_seen:,} | "
+                f"Lake: {lake_stats['trades']:,}"
+            )
+        elif self.mode == 'live':
+            # Show REAL P&L from wallet balance
+            rejected = stats.get('trades_rejected', 0)
+            cost = stats.get('measured_cost', 0)
+            logger.info(
+                f"[{elapsed:.1f}m] "
+                f"Tokens: {self.tokens_seen:,} | "
+                f"Pos: {stats['positions_open']}/{self.scanner.max_positions} | "
+                f"Trades: {stats['trades']} (skip:{rejected}) | "
+                f"WR: {stats['win_rate']:.1%} | "
+                f"REAL PnL: {stats['pnl']:+.6f} SOL ({stats.get('real_pnl_pct', 0):+.1%}) | "
+                f"Cost: {cost:.1%}"
+            )
+        else:
+            logger.info(
+                f"[{elapsed:.1f}m] "
+                f"Trades: {self.trades_seen:,} | "
+                f"Tokens: {self.tokens_seen:,} | "
+                f"Pos: {stats['positions_open']}/{self.scanner.max_positions} | "
+                f"Completed: {stats['trades']} | "
+                f"WR: {stats['win_rate']:.1%} | "
+                f"PnL: ${stats['pnl']:+.2f}"
+            )
+
+    def _print_header(self):
+        """Print header."""
+        print("\n" + "=" * 70)
+        print("RENTECH UNIFIED ENGINE")
+        print("=" * 70)
+
+        if self.mode == "live":
+            print("*" * 70)
+            print("***  LIVE MODE - REAL MONEY (COST-AWARE)  ***")
+            print("*" * 70)
+            print(f"Wallet: {self.executor.pubkey}")
+            print(f"Target: +15% / Stop: -8% (asymmetric for fees)")
+            print(f"Slippage: 2% max")
+            print(f"ONLY trades when: edge > costs + 2%")
+        elif self.mode == "paper":
+            print("*" * 70)
+            print("***  PAPER MODE - REALISTIC COSTS INCLUDED  ***")
+            print("*" * 70)
+            print("Costs simulated (matches real trading):")
+            print("  - Pump.fun fee: 1% buy + 1% sell = 2%")
+            print("  - Slippage: ~3% buy + 3% sell = 6%")
+            print("  - TOTAL ROUND TRIP: ~8%")
+            print("  - Need +8% price move just to BREAK EVEN")
+
+        print(f"Mode: {self.mode.upper()}")
+        print(f"Capital: {self.capital:.4f} SOL" if self.mode == "live" else f"Capital: ${self.capital:.2f}")
+        print(f"Min Edge: {self.scanner.min_edge:.0%}")
+        print(f"Max Positions: {self.scanner.max_positions}")
+        if self.mode != "live":
+            print(f"Target: +{self.exit_calc.target_pct:.0%} / Stop: -{self.exit_calc.stop_pct:.0%}")
+            if self.mode == "paper":
+                net_win = self.exit_calc.target_pct - 0.08
+                net_loss = -self.exit_calc.stop_pct - 0.08
+                print(f"  Net after costs: Win +{net_win:.0%} / Loss {net_loss:.0%}")
+        print("-" * 70)
+        print("RENTECH DATA SOURCES:")
+        print("  - NEW TOKENS: PumpPortal firehose (catch fresh launches)")
+        print(f"  - HIGH VOLUME: Top {MAX_TOP_TOKENS} tokens by volume (where money flows)")
+        print("  - Priority: volume * edge (liquidity + edge = best execution)")
+        print("-" * 70)
+        print("EXPLOSIVE TRADE REQUIREMENTS:")
+        print("  - Min 2 signals confirming (no single-signal trades)")
+        print("  - Volume spike 2x+ average")
+        print("  - Buy pressure 65%+ in last 10 trades")
+        print("  - Momentum 3%+ recent gain")
+        print("  - Token age < 10 minutes (fresh)")
+        print("-" * 70)
+        print("PATTERNS: REVERSAL (96%) | MOMENTUM (82.8%) | BUY_PRESSURE (81.8%)")
+        print("          + 15% live discount applied (historical != live)")
+        print("=" * 70 + "\n")
+
+    def _print_results(self):
+        """Print final results."""
+        print("\n")
+
+        if self.mode == 'collect':
+            lake_stats = self.lake.stats()
+            elapsed = (time.time() - self.start_time) / 60
+
+            print("=" * 70)
+            print("DATA COLLECTION RESULTS")
+            print("=" * 70)
+            print(f"Duration: {elapsed:.1f} minutes")
+            print(f"Trades Captured: {self.trades_seen:,}")
+            print(f"Tokens Seen: {self.tokens_seen:,}")
+            print(f"Lake Total: {lake_stats['trades']:,}")
+            print(f"Database Size: {lake_stats['db_size_mb']:.2f} MB")
+            print("=" * 70)
+
+        else:
+            self.executor.print_results()
 
 
 # =============================================================================
-# MAIN RUNNER
+# CLI
 # =============================================================================
 
-async def run_trading(args):
-    """Run the trading system"""
-    from .orchestrator import LiveTradingOrchestrator
+async def main():
+    import argparse
 
-    orchestrator = LiveTradingOrchestrator(
-        paper_mode=(args.mode == 'paper'),
-        capital=args.capital,
-        keypair_path=args.keypair,
-        rpc_url=args.rpc,
-        dry_run=args.dry_run,
-    )
-
-    await orchestrator.start()
-
-
-def main():
     parser = argparse.ArgumentParser(
-        description='Trading System Runner',
+        description="RenTech Unified Trading Engine",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  Paper trading:
-    python -m trading.run --mode paper --capital 100
+  # Collect data only (24/7 VPS mode)
+  python trading/run.py --mode collect
 
-  Dry run (test real executor without transactions):
-    python -m trading.run --mode real --keypair ~/.config/solana/trading.json --dry-run
+  # Paper trading for 1 hour
+  python trading/run.py --mode paper --capital 100 --duration 3600
 
-  Real trading:
-    python -m trading.run --mode real --keypair ~/.config/solana/trading.json --confirm-real
+  # Paper trading with custom settings
+  python trading/run.py --mode paper --capital 500 --min-edge 0.60 --max-positions 3
         """
     )
 
     parser.add_argument(
-        '--mode',
-        choices=['paper', 'real'],
-        default='paper',
-        help='Trading mode (default: paper)'
+        "--mode", type=str, default="paper",
+        choices=["collect", "paper", "live"],
+        help="Operating mode (default: paper)"
     )
     parser.add_argument(
-        '--capital',
-        type=float,
-        default=100.0,
-        help='Starting capital in SOL (default: 100)'
+        "--capital", type=float, default=100.0,
+        help="Starting capital in USD (default: 100)"
     )
     parser.add_argument(
-        '--keypair',
-        type=str,
-        default=None,
-        help='Path to Solana keypair JSON (required for real mode)'
+        "--duration", type=int, default=0,
+        help="Duration in seconds (0 = forever)"
     )
     parser.add_argument(
-        '--rpc',
-        type=str,
-        default='https://api.mainnet-beta.solana.com',
-        help='Solana RPC URL'
+        "--min-edge", type=float, default=0.80,
+        help="Minimum edge threshold (default: 0.80 for profit after 8%% costs)"
     )
     parser.add_argument(
-        '--dry-run',
-        action='store_true',
-        help='Real mode but simulate transactions (no actual sends)'
+        "--max-positions", type=int, default=5,
+        help="Maximum concurrent positions (default: 5)"
     )
     parser.add_argument(
-        '--confirm-real',
-        action='store_true',
-        help='Confirm real money trading (required for real mode without --dry-run)'
+        "--target", type=float, default=0.15,
+        help="Target profit percent (default: 0.15 for +7%% net after 8%% costs)"
     )
     parser.add_argument(
-        '--skip-checks',
-        action='store_true',
-        help='Skip pre-flight connectivity checks'
+        "--stop", type=float, default=0.08,
+        help="Stop loss percent (default: 0.08 for -16%% net after 8%% costs)"
+    )
+    parser.add_argument(
+        "--max-hold", type=int, default=300,
+        help="Max hold time in seconds (default: 300)"
     )
 
     args = parser.parse_args()
 
-    # ==========================================================================
-    # VALIDATION
-    # ==========================================================================
-
-    print("\n" + "=" * 60)
-    print("  TRADING SYSTEM - PRE-FLIGHT CHECKS")
-    print("=" * 60 + "\n")
-
-    # Python version
-    if not check_python_version():
-        sys.exit(1)
-    logger.info("[OK] Python version")
-
-    # Dependencies
-    if not check_dependencies():
-        sys.exit(1)
-    logger.info("[OK] Dependencies")
-
-    # Mode-specific validation
-    if args.mode == 'real':
-        # Keypair required
-        if not args.keypair:
-            logger.error("--keypair required for real mode")
-            sys.exit(1)
-
-        if not check_keypair(args.keypair):
-            sys.exit(1)
-        logger.info("[OK] Keypair valid")
-
-        # Must either be dry-run or explicitly confirmed
-        if not args.dry_run and not args.confirm_real:
-            logger.error("Real mode requires --dry-run OR --confirm-real")
-            logger.error("Use --dry-run to test without sending transactions")
-            logger.error("Use --confirm-real to enable live trading")
-            sys.exit(1)
-
-    # Connectivity checks
-    if not args.skip_checks:
-        logger.info("Checking connectivity...")
-
-        if args.mode == 'real':
-            if not check_rpc_connection(args.rpc):
-                logger.error("RPC connection failed - cannot proceed")
-                sys.exit(1)
-            logger.info("[OK] Solana RPC connected")
-
-        if not check_websocket_connection():
-            logger.error("PumpPortal WebSocket failed - cannot proceed")
-            sys.exit(1)
-        logger.info("[OK] PumpPortal WebSocket connected")
-
-    # ==========================================================================
-    # CONFIRMATION FOR REAL TRADING
-    # ==========================================================================
-
-    if args.mode == 'real' and not args.dry_run:
-        display_capital_warning(args.capital, args.mode)
-
-        if not confirm_real_trading():
-            logger.info("Real trading cancelled")
-            sys.exit(0)
-
-    # ==========================================================================
-    # LAUNCH
-    # ==========================================================================
-
-    print("\n" + "=" * 60)
-    print("  LAUNCHING TRADING SYSTEM")
-    print("=" * 60)
-    print(f"\n  Mode:     {'PAPER' if args.mode == 'paper' else 'REAL'}")
-    print(f"  Capital:  {args.capital} SOL")
-    if args.mode == 'real':
-        print(f"  Dry Run:  {args.dry_run}")
-    print(f"  Time:     {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("\n" + "=" * 60 + "\n")
+    # Create engine
+    engine = UnifiedEngine(
+        mode=args.mode,
+        capital=args.capital,
+        min_edge=args.min_edge,
+        max_positions=args.max_positions,
+        target_pct=args.target,
+        stop_pct=args.stop,
+        max_hold_secs=args.max_hold
+    )
 
     # Run
     try:
-        asyncio.run(run_trading(args))
+        await engine.run(duration=args.duration)
     except KeyboardInterrupt:
-        print("\n\nShutdown requested...")
-    except Exception as e:
-        logger.error(f"Fatal error: {e}")
-        sys.exit(1)
+        print("\nShutting down...")
+        engine._running = False
 
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    asyncio.run(main())
