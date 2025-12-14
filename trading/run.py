@@ -68,8 +68,8 @@ logger = logging.getLogger(__name__)
 
 PUMPPORTAL_WS = "wss://pumpportal.fun/api/data"
 STATS_INTERVAL = 60  # Log stats every minute
-TOP_TOKENS_REFRESH = 300  # Refresh top tokens every 5 minutes
-MAX_TOP_TOKENS = 100  # Subscribe to top 100 volume tokens
+TOP_TOKENS_REFRESH = 30  # Refresh top tokens every 30 seconds (aggressive but within API limits)
+MAX_TOP_TOKENS = 500  # Subscribe to top 500 volume tokens
 
 
 # =============================================================================
@@ -202,11 +202,23 @@ class UnifiedEngine:
             boosted = await fetcher.fetch_dexscreener_boosted()
             all_tokens.extend(boosted)
 
-            # 2. Search for popular Solana tokens
+            # 2. Search for popular Solana tokens (expanded for 500 token coverage)
             searched = await fetcher.fetch_dexscreener_search([
+                # Top pump.fun tokens
                 "pump", "fun", "SOL", "BONK", "WIF", "POPCAT", "MEW",
                 "SLERF", "MYRO", "FARTCOIN", "GOAT", "PNUT", "MOODENG",
-                "AI16Z", "GRIFFAIN", "ZEREBRO", "meme", "degen", "moon"
+                "AI16Z", "GRIFFAIN", "ZEREBRO", "meme", "degen", "moon",
+                # More meme tokens
+                "PEPE", "DOGE", "SHIB", "FLOKI", "WOJAK", "CHAD", "GIGA",
+                "PONKE", "BOME", "BRETT", "TURBO", "LADYS", "MOCHI",
+                # Solana ecosystem
+                "RAY", "JUP", "ORCA", "PYTH", "JTO", "TENSOR", "HONEY",
+                "RENDER", "HNT", "MOBILE", "DUST", "FORGE", "BLZE",
+                # Generic high volume
+                "solana", "raydium", "jupiter", "meteora", "ape", "rocket",
+                # Letter searches for broad coverage
+                "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
+                "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x"
             ])
             all_tokens.extend(searched)
 
